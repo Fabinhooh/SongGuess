@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SongGuess</title>
+    <title>SongGuess - Pro</title>
     <style>
         /* ================= CSS / ESTILOS MODERNOS ================= */
         :root {
@@ -75,13 +75,14 @@
         .admin-song-item:last-child { border-bottom: none; }
         .btn-edit { background: #333; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
         .btn-edit:hover { background: var(--primary); color: black; }
-        
-        /* Sistema de Abas (Nav) do Admin */
         .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
         .admin-tab-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 10px 15px; font-weight: bold; margin-bottom: -1px;}
         .admin-tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
         .admin-tab-content { display: none; }
         .admin-tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .provider-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;}
+        .badge-yt { background-color: #ff0000; color: white; }
+        .badge-mp3 { background-color: #1db954; color: black; }
     </style>
 </head>
 <body>
@@ -90,7 +91,7 @@
         
         <!-- TELA DE LOGIN -->
         <div id="screen-login" class="screen active">
-            <h1><span class="highlight">Meu</span> songguess</h1>
+            <h1><span class="highlight">Song</span>Guess</h1>
             <h2>Identifique-se para jogar</h2>
             <div class="input-group"><input type="text" id="input-username" placeholder="Digite seu nome de usuário" autocomplete="off"></div>
             <button id="btn-login" class="btn">Entrar / Criar Perfil</button>
@@ -169,7 +170,17 @@
                 <div class="input-group"><input type="text" id="add-titulo" placeholder="Título da Música"></div>
                 <div class="input-group"><input type="text" id="add-artista" placeholder="Artista"></div>
                 <div class="input-group"><input type="text" id="add-genero" placeholder="Gênero (ex: Pop, Rock)"></div>
-                <div class="input-group"><input type="text" id="add-link" placeholder="Link ou ID do YouTube"></div>
+                
+                <!-- NOVO: Escolha do Provedor de Áudio -->
+                <div class="input-group">
+                    <label>Provedor de Áudio:</label>
+                    <select id="add-provedor">
+                        <option value="youtube">YouTube (Sujeito a anúncios)</option>
+                        <option value="mp3">Link Direto / MP3 (Sem anúncios)</option>
+                    </select>
+                </div>
+                <div class="input-group"><input type="text" id="add-link" placeholder="Link do Youtube ou URL do MP3"></div>
+                
                 <div class="input-group"><input type="text" id="add-img" placeholder="Link da Imagem (Opcional)"></div>
                 <div class="input-group"><input type="number" id="add-inicio" placeholder="Começar no segundo (ex: 45)"></div>
                 <label style="font-size:12px; color:var(--text-muted); text-align:left; display:block;">3 Opções Erradas:</label>
@@ -180,7 +191,6 @@
                 <button onclick="limparFormularioAdmin()" class="btn btn-outline btn-small" style="display:none;" id="btn-cancel-edit">Cancelar Edição</button>
 
                 <h3>Exportar / Importar Playlist</h3>
-                <p style="font-size: 12px; color: var(--text-muted); text-align: left;">Formato JSON:</p>
                 <div class="admin-grid">
                     <button onclick="exportarJSON('musicas')" class="btn btn-outline btn-small">📥 JSON</button>
                     <div style="position: relative;">
@@ -188,7 +198,6 @@
                         <input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'musicas')">
                     </div>
                 </div>
-                <p style="font-size: 12px; color: var(--text-muted); text-align: left; margin-top:-5px;">Formato Planilha (CSV):</p>
                 <div class="admin-grid">
                     <button onclick="exportarCSV()" class="btn btn-outline btn-small">📥 CSV</button>
                     <div style="position: relative;">
@@ -204,9 +213,6 @@
                     <h3 style="border:none; margin:0; padding:0; text-align:center; color:white;">Perfil Ativo: <span class="highlight" id="admin-perfil-nome">Nenhum</span></h3>
                     <p style="color:var(--text-muted); font-size:14px;">Acertos totais: <span id="admin-perfil-score">0</span></p>
                 </div>
-                
-                <p style="font-size: 14px; color: var(--text-muted); text-align: left;">Use os botões abaixo para fazer backup do seu histórico de acertos ou importar seu perfil de outro dispositivo (Formato JSON).</p>
-                
                 <div class="admin-grid" style="margin-top: 20px;">
                     <button onclick="exportarJSON('perfil')" class="btn btn-outline btn-small">📥 Exportar Meu Perfil</button>
                     <div style="position: relative;">
@@ -225,17 +231,23 @@
     <!-- ================= JAVASCRIPT ================= -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // Banco Padrão Híbrido (1 com MP3 Direto sem anúncio, 4 com YouTube)
         const bancoPadrao = [
-            { id: "1", titulo: "Bohemian Rhapsody", artista: "Queen", genero: "Rock", youtube_id: "fJ9rUzIMcZQ", inicio_segundos: 45, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b", opcoes_erradas: ["Stairway to Heaven - Led Zeppelin", "Hotel California - Eagles", "Hey Jude - Beatles"] },
-            { id: "2", titulo: "Blinding Lights", artista: "The Weeknd", genero: "Pop", youtube_id: "4NRXx6U8ABQ", inicio_segundos: 25, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36", opcoes_erradas: ["Starboy - The Weeknd", "As It Was - Harry Styles", "Levitating - Dua Lipa"] },
-            { id: "3", titulo: "Shape of You", artista: "Ed Sheeran", genero: "Pop", youtube_id: "JGwWNGJdvx8", inicio_segundos: 30, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96", opcoes_erradas: ["Perfect - Ed Sheeran", "Sorry - Justin Bieber", "Havana - Camila Cabello"] },
-            { id: "4", titulo: "Evidências", artista: "Chitãozinho & Xororó", genero: "Sertanejo", youtube_id: "ePjtnSPFWK8", inicio_segundos: 55, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2733979857d4287bb4a595738cb", opcoes_erradas: ["Fio de Cabelo - Chitãozinho", "É o Amor - Zezé", "Dormi na Praça - Bruno & Marrone"] },
-            { id: "5", titulo: "Smells Like Teen Spirit", artista: "Nirvana", genero: "Rock", youtube_id: "hTWKbfoikeg", inicio_segundos: 34, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273e175a19e530c898d167d39bf", opcoes_erradas: ["Come As You Are - Nirvana", "Everlong - Foo Fighters", "Alive - Pearl Jam"] }
+            { id: "1", provedor: "mp3", audio_url: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg", titulo: "Tema do Tetris", artista: "Videogame", genero: "Geek", inicio_segundos: 0, imagem_capa: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Tetris_logo.png/220px-Tetris_logo.png", opcoes_erradas: ["Super Mario - Nintendo", "Zelda - Nintendo", "Sonic - Sega"] },
+            { id: "2", provedor: "youtube", audio_url: "4NRXx6U8ABQ", titulo: "Blinding Lights", artista: "The Weeknd", genero: "Pop", inicio_segundos: 25, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36", opcoes_erradas: ["Starboy - The Weeknd", "As It Was - Harry Styles", "Levitating - Dua Lipa"] },
+            { id: "3", provedor: "youtube", audio_url: "JGwWNGJdvx8", titulo: "Shape of You", artista: "Ed Sheeran", genero: "Pop", inicio_segundos: 30, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96", opcoes_erradas: ["Perfect - Ed Sheeran", "Sorry - Justin Bieber", "Havana - Camila Cabello"] },
+            { id: "4", provedor: "youtube", audio_url: "ePjtnSPFWK8", titulo: "Evidências", artista: "Chitãozinho & Xororó", genero: "Sertanejo", inicio_segundos: 55, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2733979857d4287bb4a595738cb", opcoes_erradas: ["Fio de Cabelo - Chitãozinho", "É o Amor - Zezé", "Dormi na Praça - Bruno & Marrone"] },
+            { id: "5", provedor: "youtube", audio_url: "hTWKbfoikeg", titulo: "Smells Like Teen Spirit", artista: "Nirvana", genero: "Rock", inicio_segundos: 34, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273e175a19e530c898d167d39bf", opcoes_erradas: ["Come As You Are - Nirvana", "Everlong - Foo Fighters", "Alive - Pearl Jam"] }
         ];
 
         let bancoDeMusicas = JSON.parse(localStorage.getItem('songguess_musicas')) || bancoPadrao;
         let perfilUsuario = { nome: "", acertosTotais: 0 };
-        let player, playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
+        
+        // Motores de Áudio
+        let ytPlayer = null; 
+        let mp3Player = new Audio();
+        
+        let playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
         let respostaFoiDada = false;
 
         // --- SISTEMA DE TELAS E ABAS ---
@@ -253,12 +265,11 @@
         function mudarAbaAdmin(idAba) {
             document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.admin-tab-content').forEach(aba => aba.classList.remove('active'));
-            
             event.target.classList.add('active');
             document.getElementById(idAba).classList.add('active');
         }
 
-        // --- LOGIN E PREPARAÇÃO ---
+        // --- LOGIN E PERFIL ---
         document.getElementById('btn-login').addEventListener('click', () => {
             const nome = document.getElementById('input-username').value.trim();
             if(!nome) return alert("Digite um nome!");
@@ -299,7 +310,7 @@
             valoresUnicos.forEach(val => select.innerHTML += `<option value="${val}">${val}</option>`);
         }
 
-        // --- GAMEPLAY ---
+        // --- GAMEPLAY E MOTOR DE ÁUDIO ---
         document.getElementById('btn-start').addEventListener('click', () => {
             modoJogo = document.getElementById('select-mode').value;
             let qtdPedida = parseInt(document.getElementById('select-rounds').value);
@@ -323,7 +334,7 @@
             let musica = playlistJogo[rodadaAtual];
             document.getElementById('current-round-text').innerText = rodadaAtual + 1;
             
-            document.getElementById('music-cover-img').src = musica.imagem_capa || 'https://via.placeholder.com/150/282828/FFFFFF?text=songguess';
+            document.getElementById('music-cover-img').src = musica.imagem_capa || 'https://via.placeholder.com/150/282828/FFFFFF?text=SongGuess';
             document.getElementById('music-genre-badge').innerText = musica.genero || 'Mix';
             document.getElementById('progress-bar').style.width = "0%";
             document.getElementById('status-text').innerText = "Ouça e adivinhe!";
@@ -331,8 +342,20 @@
             const btnPlay = document.getElementById('btn-play');
             btnPlay.innerText = "▶ Ouvir (12s)"; btnPlay.disabled = false;
 
-            if(player && player.loadVideoById) { player.loadVideoById({ videoId: musica.youtube_id, startSeconds: musica.inicio_segundos }); player.pauseVideo(); }
+            // PREPARAÇÃO DO MOTOR HÍBRIDO DE ÁUDIO
+            let provedor = musica.provedor || 'youtube'; // fallback seguro
+            if(provedor === 'mp3') {
+                mp3Player.src = musica.audio_url;
+                mp3Player.currentTime = musica.inicio_segundos;
+                mp3Player.pause(); // garante que não toca sozinho
+            } else {
+                if(ytPlayer && ytPlayer.loadVideoById) { 
+                    ytPlayer.loadVideoById({ videoId: musica.audio_url, startSeconds: musica.inicio_segundos }); 
+                    ytPlayer.pauseVideo(); 
+                }
+            }
 
+            // UI de Resposta
             if (modoJogo === 'alternativas') {
                 document.getElementById('area-alternativas').style.display = 'grid';
                 document.getElementById('area-digitar').style.display = 'none';
@@ -353,13 +376,30 @@
         }
 
         document.getElementById('btn-play').addEventListener('click', (e) => {
-            if(!player || !player.playVideo) return alert("O áudio foi bloqueado. Tente clicar de novo ou hospedar na web.");
-            player.playVideo(); e.target.disabled = true; e.target.innerText = "🎵 Tocando...";
+            let musica = playlistJogo[rodadaAtual];
+            let provedor = musica.provedor || 'youtube';
+            
+            if(provedor === 'mp3') {
+                mp3Player.play();
+            } else {
+                if(!ytPlayer || !ytPlayer.playVideo) return alert("API do YouTube não carregou ou foi bloqueada. Tente web hosting.");
+                ytPlayer.playVideo(); 
+            }
+            
+            e.target.disabled = true; e.target.innerText = "🎵 Tocando...";
+            
             let tempo = 0; clearInterval(timerProgresso);
             timerProgresso = setInterval(() => {
                 tempo += 0.1; document.getElementById('progress-bar').style.width = `${(tempo / tempoLimite) * 100}%`;
                 if (tempo >= tempoLimite) {
-                    clearInterval(timerProgresso); player.pauseVideo(); player.seekTo(playlistJogo[rodadaAtual].inicio_segundos);
+                    clearInterval(timerProgresso); 
+                    if(provedor === 'mp3') {
+                        mp3Player.pause();
+                        mp3Player.currentTime = musica.inicio_segundos;
+                    } else {
+                        ytPlayer.pauseVideo(); 
+                        ytPlayer.seekTo(musica.inicio_segundos);
+                    }
                     e.target.disabled = false; e.target.innerText = "▶ Ouvir Novamente";
                 }
             }, 100);
@@ -376,9 +416,12 @@
             if(respostaFoiDada) return;
             respostaFoiDada = true; 
             clearInterval(timerProgresso);
-            if(player && player.pauseVideo) player.pauseVideo();
-
+            
             let musica = playlistJogo[rodadaAtual];
+            let provedor = musica.provedor || 'youtube';
+            if(provedor === 'mp3') mp3Player.pause();
+            else if(ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+
             let acertou = false;
             let respostaCertaCompleta = `${musica.titulo} - ${musica.artista}`;
 
@@ -425,17 +468,19 @@
         }
 
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-player', { height: '0', width: '0', playerVars: { 'autoplay': 0, 'controls': 0 } });
+            ytPlayer = new YT.Player('youtube-player', { height: '0', width: '0', playerVars: { 'autoplay': 0, 'controls': 0 } });
         }
 
-        // --- ADMIN LISTA, EDIÇÃO E SALVAR ---
+        // --- ADMIN LISTA E EDIÇÃO ---
         function renderizarListaAdmin() {
             const divList = document.getElementById('admin-music-list');
             divList.innerHTML = '';
             bancoDeMusicas.forEach(m => {
+                let prov = m.provedor || 'youtube';
+                let provBadge = prov === 'mp3' ? '<span class="provider-badge badge-mp3">MP3</span>' : '<span class="provider-badge badge-yt">YT</span>';
                 divList.innerHTML += `
                     <div class="admin-song-item">
-                        <div><b>${m.titulo}</b> - ${m.artista} <small style="color:var(--primary)">(${m.genero})</small></div>
+                        <div><b>${m.titulo}</b> - ${m.artista} ${provBadge}</div>
                         <button class="btn-edit" onclick="prepararEdicao('${m.id}')">✏️ Edit</button>
                     </div>`;
             });
@@ -449,7 +494,8 @@
             document.getElementById('add-titulo').value = m.titulo;
             document.getElementById('add-artista').value = m.artista;
             document.getElementById('add-genero').value = m.genero;
-            document.getElementById('add-link').value = m.youtube_id;
+            document.getElementById('add-provedor').value = m.provedor || 'youtube';
+            document.getElementById('add-link').value = m.audio_url || m.youtube_id; // backward compatibility
             document.getElementById('add-img').value = m.imagem_capa || '';
             document.getElementById('add-inicio').value = m.inicio_segundos;
             document.getElementById('add-erro1').value = m.opcoes_erradas[0];
@@ -466,6 +512,7 @@
             document.getElementById('admin-form-title').innerText = "➕ Adicionar Nova Música";
             document.getElementById('btn-save-music').innerText = "Salvar Música";
             document.getElementById('btn-cancel-edit').style.display = "none";
+            document.getElementById('add-provedor').value = 'youtube';
             document.querySelectorAll('#aba-playlist input[type="text"], #aba-playlist input[type="number"], #aba-playlist input[type="hidden"]').forEach(i => i.value = '');
         }
 
@@ -474,27 +521,30 @@
             let tit = document.getElementById('add-titulo').value, art = document.getElementById('add-artista').value, 
                 gen = document.getElementById('add-genero').value, lnk = document.getElementById('add-link').value,
                 img = document.getElementById('add-img').value, ini = document.getElementById('add-inicio').value,
+                prov = document.getElementById('add-provedor').value,
                 e1 = document.getElementById('add-erro1').value, e2 = document.getElementById('add-erro2').value, e3 = document.getElementById('add-erro3').value;
 
-            if(!tit || !art || !lnk || !gen) return alert("Título, Artista, Gênero e Link são obrigatórios!");
+            if(!tit || !art || !lnk || !gen) return alert("Preencha Título, Artista, Gênero e Link!");
 
-            let match = lnk.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-            let ytID = (match && match[2].length === 11) ? match[2] : lnk;
+            let finalLink = lnk;
+            if(prov === 'youtube') {
+                let match = lnk.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+                finalLink = (match && match[2].length === 11) ? match[2] : lnk;
+            }
 
             let obj = {
                 id: idEdit ? idEdit : Date.now().toString(),
-                titulo: tit, artista: art, genero: gen, youtube_id: ytID, 
+                titulo: tit, artista: art, genero: gen, 
+                provedor: prov, audio_url: finalLink, 
                 inicio_segundos: parseInt(ini) || 0, imagem_capa: img,
                 opcoes_erradas: [e1||"Erro 1", e2||"Erro 2", e3||"Erro 3"]
             };
 
             if(idEdit) { 
                 let index = bancoDeMusicas.findIndex(x => x.id === idEdit);
-                bancoDeMusicas[index] = obj;
-                alert("Música ATUALIZADA!");
+                bancoDeMusicas[index] = obj; alert("Música ATUALIZADA!");
             } else { 
-                bancoDeMusicas.push(obj);
-                alert("Nova música ADICIONADA!");
+                bancoDeMusicas.push(obj); alert("Nova música ADICIONADA!");
             }
 
             localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas));
@@ -502,7 +552,7 @@
             renderizarListaAdmin();
         }
 
-        // --- JSON E CSV IMPORT/EXPORT MULTIUSO ---
+        // --- JSON E CSV IMPORT/EXPORT ---
         function exportarJSON(tipo) {
             let dados = tipo === 'musicas' ? bancoDeMusicas : perfilUsuario;
             let nomeArq = tipo === 'musicas' ? 'songguess_playlist.json' : `songguess_perfil_${perfilUsuario.nome || 'usuario'}.json`;
@@ -518,6 +568,8 @@
                     let obj = JSON.parse(evt.target.result);
                     if(tipo === 'musicas') {
                         if(!Array.isArray(obj)) return alert("Arquivo de playlist inválido!");
+                        // Backward compatibility update
+                        obj.forEach(m => { if(!m.audio_url && m.youtube_id) { m.audio_url = m.youtube_id; m.provedor = 'youtube'; }});
                         bancoDeMusicas = obj; localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); 
                         alert("Playlist JSON importada!"); renderizarListaAdmin(); 
                     } else if(tipo === 'perfil') {
@@ -525,17 +577,18 @@
                         perfilUsuario = obj; salvarPerfil();
                         document.getElementById('admin-perfil-nome').innerText = perfilUsuario.nome;
                         document.getElementById('admin-perfil-score').innerText = perfilUsuario.acertosTotais;
-                        alert(`Perfil de ${perfilUsuario.nome} importado com sucesso!`);
+                        alert(`Perfil importado com sucesso!`);
                     }
                 } catch (err) { alert("Erro ao ler JSON."); }
             }; r.readAsText(f);
         }
 
-        // --- CSV IMPORT/EXPORT (Separador: Ponto e Vírgula) ---
         function exportarCSV() {
-            let cabecalho = "id;titulo;artista;genero;youtube_id;inicio_segundos;imagem_capa;erro1;erro2;erro3\n";
+            let cabecalho = "id;titulo;artista;genero;provedor;audio_url;inicio_segundos;imagem_capa;erro1;erro2;erro3\n";
             let linhas = bancoDeMusicas.map(m => {
-                return `${m.id};${m.titulo};${m.artista};${m.genero};${m.youtube_id};${m.inicio_segundos};${m.imagem_capa || ''};${m.opcoes_erradas[0]};${m.opcoes_erradas[1]};${m.opcoes_erradas[2]}`;
+                let prov = m.provedor || 'youtube';
+                let url = m.audio_url || m.youtube_id;
+                return `${m.id};${m.titulo};${m.artista};${m.genero};${prov};${url};${m.inicio_segundos};${m.imagem_capa || ''};${m.opcoes_erradas[0]};${m.opcoes_erradas[1]};${m.opcoes_erradas[2]}`;
             }).join('\n');
             let dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(cabecalho + linhas);
             let a = document.createElement('a'); a.href = dataStr; a.download = 'songguess_planilha.csv'; document.body.appendChild(a); a.click(); a.remove();
@@ -553,11 +606,12 @@
                     let novoBanco = [];
                     for(let i = 1; i < linhas.length; i++) {
                         let cols = linhas[i].split(';');
-                        if(cols.length >= 6) {
+                        if(cols.length >= 7) {
                             novoBanco.push({
-                                id: cols[0], titulo: cols[1], artista: cols[2], genero: cols[3], youtube_id: cols[4],
-                                inicio_segundos: parseInt(cols[5]) || 0, imagem_capa: cols[6] || '',
-                                opcoes_erradas: [cols[7]||"Err 1", cols[8]||"Err 2", cols[9]||"Err 3"]
+                                id: cols[0], titulo: cols[1], artista: cols[2], genero: cols[3],
+                                provedor: cols[4], audio_url: cols[5],
+                                inicio_segundos: parseInt(cols[6]) || 0, imagem_capa: cols[7] || '',
+                                opcoes_erradas: [cols[8]||"Err 1", cols[9]||"Err 2", cols[10]||"Err 3"]
                             });
                         }
                     }
