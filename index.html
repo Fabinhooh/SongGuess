@@ -3,36 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SongGuess - Pro</title>
+    <title>SongGuess</title>
     <style>
         /* ================= CSS / ESTILOS MODERNOS ================= */
         :root { --bg-color: #0d0d0d; --card-bg: #181818; --primary: #1db954; --primary-hover: #1ed760; --text-main: #ffffff; --text-muted: #b3b3b3; --border-color: #282828; --correct: #1db954; --wrong: #e22134; }
         body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background-color: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); text-align: center; max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); }
+        .container { background-color: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); text-align: center; max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); position: relative;}
         ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        /* Top Bar & Perfil */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .profile-btn { background: transparent; border: 2px solid var(--border-color); border-radius: 50%; width: 45px; height: 45px; padding: 0; cursor: pointer; overflow: hidden; transition: 0.2s;}
+        .profile-btn:hover { border-color: var(--primary); }
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin: 0 auto 15px; display: block;}
+
         h1 { margin-top: 0; font-weight: 800; font-size: 28px; } .highlight { color: var(--primary); }
         h2 { font-size: 18px; margin-bottom: 20px; color: var(--text-muted); font-weight: normal;}
         h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top: 25px; text-align: left; font-size: 16px;}
+        
         .cover-container { width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.5); background-color: #282828; display: flex; align-items: center; justify-content: center; }
         .cover-container img { width: 100%; height: 100%; object-fit: cover; }
         .genre-badge { background-color: var(--primary); color: #000; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+        
         .btn { background-color: var(--primary); color: #000; border: none; padding: 14px 20px; font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 15px; transition: transform 0.1s, background-color 0.2s; }
         .btn:disabled { background-color: #444; color: #888; cursor: not-allowed; transform: none !important;}
         .btn:hover:not(:disabled) { background-color: var(--primary-hover); transform: scale(1.02); }
         .btn-outline { background-color: transparent; border: 2px solid #555; color: var(--text-main); }
         .btn-small { padding: 10px 15px; font-size: 14px; margin-top: 10px; }
         .btn-danger { background-color: transparent; border: 2px solid var(--wrong); color: var(--wrong); }
+        .btn-danger:hover { background-color: var(--wrong); color: white;}
         
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px;}
         select, input[type="text"], input[type="number"], input[type="file"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background-color: #242424; color: white; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
         select:focus, input:focus { outline: none; border-color: var(--primary); }
-        select[multiple] { height: 100px; padding: 5px; } /* Ajuste para múltipla seleção */
-        
-        /* Checkbox customizado */
+        select[multiple] { height: 100px; padding: 5px; }
         .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; color: white !important;}
         .checkbox-label input { width: 20px; height: 20px; cursor: pointer; }
-
         .input-correct { background-color: var(--correct) !important; color: white !important; font-weight: bold;}
         .input-wrong { background-color: var(--wrong) !important; color: white !important; font-weight: bold;}
         
@@ -47,27 +55,25 @@
         .option-btn:hover:not(:disabled) { background-color: #333; border-color: var(--primary); }
         .option-btn.correct-choice { background-color: var(--correct) !important; border-color: white !important; color: black !important; font-weight: bold;}
         .option-btn.wrong-choice { background-color: var(--wrong) !important; border-color: white !important; font-weight: bold;}
+        
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; text-align: left; }
         th, td { padding: 12px 8px; border-bottom: 1px solid var(--border-color); }
         .row-correct { border-left: 4px solid var(--correct); }
         .row-wrong { border-left: 4px solid var(--wrong); }
+        
         .screen { display: none; animation: fadeIn 0.3s ease; }
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
         .header-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;}
-        .admin-song-list { max-height: 250px; overflow-y: auto; text-align: left; background: #121212; border-radius: 10px; padding: 10px; border: 1px solid #333; margin-bottom: 20px;}
-        .admin-song-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #282828; font-size: 13px; }
+        
+        /* Admin List Custom */
+        .admin-song-list { max-height: 250px; overflow-y: auto; text-align: left; background: #121212; border-radius: 10px; padding: 10px; border: 1px solid #333; margin-bottom: 10px;}
+        .admin-song-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #282828; font-size: 13px; gap: 10px;}
         .admin-song-item:last-child { border-bottom: none; }
-        .btn-edit { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
-        .btn-edit:hover { background: #555; }
-        .btn-delete { background: var(--wrong); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-left:5px;}
-        .btn-delete:hover { background: #b71c1c; }
-        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
-        .admin-tab-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 10px 15px; font-weight: bold; margin-bottom: -1px;}
-        .admin-tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-        .admin-tab-content { display: none; }
-        .admin-tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .btn-action { background: #333; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; }
+        .btn-action:hover { background: #555; }
         .provider-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;}
         .badge-yt { background-color: #ff0000; color: white; }
         .badge-mp3 { background-color: var(--primary); color: black; }
@@ -75,7 +81,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- TELA DE LOGIN -->
+        <!-- ================= TELA DE LOGIN ================= -->
         <div id="screen-login" class="screen active">
             <h1><span class="highlight">Song</span>Guess</h1>
             <h2>Identifique-se para jogar</h2>
@@ -84,9 +90,14 @@
             <button onclick="mudarTela('screen-admin')" class="btn btn-outline btn-small" style="margin-top: 30px;">⚙️ Acesso Admin</button>
         </div>
 
-        <!-- TELA INICIAL (CONFIGURAÇÕES) -->
+        <!-- ================= TELA INICIAL ================= -->
         <div id="screen-start" class="screen">
-            <h1 style="font-size: 22px; margin-bottom: 25px;">Olá, <span id="user-display-name" class="highlight"></span>!</h1>
+            <div class="top-bar">
+                <h1 style="font-size: 22px; margin:0;">Olá, <span id="user-display-name" class="highlight"></span>!</h1>
+                <button class="profile-btn" onclick="mudarTela('screen-profile')" title="Meu Perfil">
+                    <img id="nav-avatar" src="" alt="Avatar">
+                </button>
+            </div>
             
             <div class="input-group"><label>Filtrar Categoria:</label>
                 <select id="select-category-type" onchange="atualizarSubCategorias()">
@@ -95,8 +106,7 @@
             </div>
             
             <div class="input-group" id="group-subcategory" style="display: none;">
-                <label>Selecione as opções: <br><small style="font-size:11px; color:#888;">(Pode selecionar vários)</small></label>
-                <!-- MULTIPLE SELECT -->
+                <label>Selecione as opções: <br><small style="font-size:11px; color:#888;">(Segure CTRL para selecionar vários)</small></label>
                 <select id="select-subcategory" multiple></select>
             </div>
 
@@ -109,24 +119,44 @@
                 </div>
             </div>
 
-            <!-- NOVAS CONFIGURAÇÕES DE AUDIO -->
-            <div class="input-group">
-                <label>Duração do trecho (segundos):</label>
-                <input type="number" id="input-duration" value="12" min="3" max="60">
-            </div>
+            <div class="input-group"><label>Duração do trecho (segundos):</label><input type="number" id="input-duration" value="12" min="3" max="60"></div>
             <div class="input-group" style="background:#242424; padding:10px; border-radius:10px;">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="check-autoplay" checked> Tocar música automaticamente
-                </label>
+                <label class="checkbox-label"><input type="checkbox" id="check-autoplay" checked> Tocar música automaticamente</label>
             </div>
 
             <button id="btn-start" class="btn">Iniciar Partida</button>
-            <button onclick="mudarTela('screen-login')" class="btn btn-outline btn-small">Trocar Usuário</button>
         </div>
 
-        <!-- TELA DE JOGO -->
+        <!-- ================= MENU DE PERFIL ================= -->
+        <div id="screen-profile" class="screen">
+            <h1>Meu <span class="highlight">Perfil</span></h1>
+            <img id="profile-avatar-preview" class="profile-avatar-large" src="" alt="Avatar">
+            
+            <p style="color:var(--text-muted); font-size:14px; margin-top:-10px; margin-bottom:20px;">Acertos Totais: <b class="highlight" id="profile-score-display" style="font-size:18px;">0</b></p>
+            
+            <div class="input-group"><label>Nome de Usuário:</label><input type="text" id="prof-name"></div>
+            <div class="input-group"><label>Link da Foto (Avatar URL):</label><input type="text" id="prof-avatar" placeholder="Cole o link de uma imagem"></div>
+            
+            <button onclick="salvarEdicaoPerfil()" class="btn">💾 Salvar Alterações</button>
+            
+            <h3 style="margin-top: 30px;">Backup de Dados</h3>
+            <div class="admin-grid">
+                <button onclick="exportarJSON('perfil')" class="btn btn-outline btn-small">📥 Exportar Perfil</button>
+                <div style="position: relative;">
+                    <button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Importar Perfil</button>
+                    <input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'perfil')">
+                </div>
+            </div>
+
+            <div style="display: flex; gap:10px; margin-top:20px;">
+                <button onclick="mudarTela('screen-start')" class="btn btn-outline" style="flex:1; margin-top:0;">Voltar</button>
+                <button onclick="location.reload()" class="btn btn-danger" style="flex:1; margin-top:0;">Sair da Conta</button>
+            </div>
+        </div>
+
+        <!-- ================= TELA DE JOGO ================= -->
         <div id="screen-game" class="screen">
-            <div class="header-stats"><span>Perfil: <b id="game-username" class="highlight"></b></span><span>Acertos: <b id="game-total-score" class="highlight">0</b></span></div>
+            <div class="header-stats"><span><b id="game-username" class="highlight"></b></span><span>Acertos: <b id="game-total-score" class="highlight">0</b></span></div>
             <div class="tracker" id="score-tracker"></div>
             <h2>Música <span id="current-round-text" class="highlight">1</span> de <span id="total-rounds-text">10</span></h2>
             
@@ -144,85 +174,55 @@
             </div>
         </div>
 
-        <!-- TELA FINAL -->
+        <!-- ================= TELA FINAL ================= -->
         <div id="screen-end" class="screen">
             <h1 class="highlight">Fim da Partida!</h1>
             <h2 id="final-score-text">Você acertou X de Y</h2>
             <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
                 <table id="results-table"><tbody id="results-body"></tbody></table>
             </div>
-            <button onclick="location.reload()" class="btn">Voltar ao Início</button>
+            <!-- CORRIGIDO: Retorna ao Start sem deslogar -->
+            <button onclick="mudarTela('screen-start')" class="btn">Voltar ao Início</button>
         </div>
 
-        <!-- TELA DE ADMIN -->
+        <!-- ================= TELA DE ADMIN (Somente Playlist) ================= -->
         <div id="screen-admin" class="screen">
-            <h1>⚙️ <span class="highlight">Admin</span></h1>
+            <h1>⚙️ <span class="highlight">Admin</span> Músicas</h1>
             
-            <div class="admin-nav">
-                <button class="admin-tab-btn active" onclick="mudarAbaAdmin('aba-playlist')">🎵 Playlist</button>
-                <button class="admin-tab-btn" onclick="mudarAbaAdmin('aba-perfil')">👤 Perfil</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 5px;">
+                <h3 style="margin:0; border:none;">Lista de Músicas</h3>
+                <button onclick="adminExcluirSelecionados()" class="btn-danger btn-small" style="border-radius:5px;">🗑️ Excluir Selecionados</button>
+            </div>
+            
+            <div class="admin-song-list" id="admin-music-list"></div>
+
+            <h3 id="admin-form-title">➕ Adicionar Nova Música</h3>
+            <input type="hidden" id="edit-id" value=""> 
+            <div class="input-group"><input type="text" id="add-titulo" placeholder="Título da Música"></div>
+            <div class="input-group"><input type="text" id="add-artista" placeholder="Artista"></div>
+            <div class="input-group"><input type="text" id="add-genero" placeholder="Gênero (ex: Pop, Rock)"></div>
+            <div class="input-group"><label>Provedor:</label><select id="add-provedor"><option value="youtube">YouTube</option><option value="mp3">Link MP3 Direto</option></select></div>
+            <div class="input-group"><input type="text" id="add-link" placeholder="Link do Youtube ou URL do MP3"></div>
+            <div class="input-group"><input type="text" id="add-img" placeholder="Link da Imagem (Opcional)"></div>
+            <div class="input-group"><input type="number" id="add-inicio" placeholder="Começar no segundo (ex: 45)"></div>
+            <label style="font-size:12px; color:var(--text-muted); text-align:left; display:block;">3 Opções Erradas:</label>
+            <div class="input-group"><input type="text" id="add-erro1" placeholder="Opção Errada 1"></div>
+            <div class="input-group"><input type="text" id="add-erro2" placeholder="Opção Errada 2"></div>
+            <div class="input-group"><input type="text" id="add-erro3" placeholder="Opção Errada 3"></div>
+            <button id="btn-save-music" onclick="adminSalvarMusica()" class="btn">Salvar Música</button>
+            <button onclick="limparFormularioAdmin()" class="btn btn-outline btn-small" style="display:none;" id="btn-cancel-edit">Cancelar Edição</button>
+
+            <h3 style="margin-top:30px;">Exportar / Importar Banco (JSON/CSV)</h3>
+            <div class="admin-grid">
+                <button onclick="exportarJSON('musicas')" class="btn btn-outline btn-small">📥 Export JSON</button>
+                <div style="position: relative;"><button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Import JSON</button><input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'musicas')"></div>
+            </div>
+            <div class="admin-grid">
+                <button onclick="exportarCSV()" class="btn btn-outline btn-small">📥 Export CSV</button>
+                <div style="position: relative;"><button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Import CSV</button><input type="file" accept=".csv" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarCSV(event)"></div>
             </div>
 
-            <div id="aba-playlist" class="admin-tab-content active">
-                <h3>Todas as Músicas</h3>
-                <div class="admin-song-list" id="admin-music-list"></div>
-
-                <h3 id="admin-form-title">➕ Adicionar Nova Música</h3>
-                <input type="hidden" id="edit-id" value=""> 
-                <div class="input-group"><input type="text" id="add-titulo" placeholder="Título da Música"></div>
-                <div class="input-group"><input type="text" id="add-artista" placeholder="Artista"></div>
-                <div class="input-group"><input type="text" id="add-genero" placeholder="Gênero (ex: Pop, Rock)"></div>
-                
-                <div class="input-group">
-                    <label>Provedor de Áudio:</label>
-                    <select id="add-provedor">
-                        <option value="youtube">YouTube (Sujeito a anúncios)</option>
-                        <option value="mp3">Link Direto / MP3 (Sem anúncios)</option>
-                    </select>
-                </div>
-                <div class="input-group"><input type="text" id="add-link" placeholder="Link do Youtube ou URL do MP3"></div>
-                
-                <div class="input-group"><input type="text" id="add-img" placeholder="Link da Imagem (Opcional)"></div>
-                <div class="input-group"><input type="number" id="add-inicio" placeholder="Começar no segundo (ex: 45)"></div>
-                <label style="font-size:12px; color:var(--text-muted); text-align:left; display:block;">3 Opções Erradas:</label>
-                <div class="input-group"><input type="text" id="add-erro1" placeholder="Opção Errada 1 (Música - Artista)"></div>
-                <div class="input-group"><input type="text" id="add-erro2" placeholder="Opção Errada 2"></div>
-                <div class="input-group"><input type="text" id="add-erro3" placeholder="Opção Errada 3"></div>
-                <button id="btn-save-music" onclick="adminSalvarMusica()" class="btn">Salvar Música</button>
-                <button onclick="limparFormularioAdmin()" class="btn btn-outline btn-small" style="display:none;" id="btn-cancel-edit">Cancelar Edição</button>
-
-                <h3>Exportar / Importar Playlist</h3>
-                <div class="admin-grid">
-                    <button onclick="exportarJSON('musicas')" class="btn btn-outline btn-small">📥 JSON</button>
-                    <div style="position: relative;">
-                        <button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Importar</button>
-                        <input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'musicas')">
-                    </div>
-                </div>
-                <div class="admin-grid">
-                    <button onclick="exportarCSV()" class="btn btn-outline btn-small">📥 CSV</button>
-                    <div style="position: relative;">
-                        <button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Importar</button>
-                        <input type="file" accept=".csv" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarCSV(event)">
-                    </div>
-                </div>
-            </div>
-
-            <div id="aba-perfil" class="admin-tab-content">
-                <div style="background-color:#242424; padding:20px; border-radius:10px; text-align:center; margin-bottom: 20px;">
-                    <h3 style="border:none; margin:0; padding:0; text-align:center; color:white;">Perfil Ativo: <span class="highlight" id="admin-perfil-nome">Nenhum</span></h3>
-                    <p style="color:var(--text-muted); font-size:14px;">Acertos totais: <span id="admin-perfil-score">0</span></p>
-                </div>
-                <div class="admin-grid" style="margin-top: 20px;">
-                    <button onclick="exportarJSON('perfil')" class="btn btn-outline btn-small">📥 Exportar Meu Perfil</button>
-                    <div style="position: relative;">
-                        <button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Importar Perfil</button>
-                        <input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'perfil')">
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="mudarTela('screen-login')" class="btn btn-danger" style="margin-top:30px;">Voltar ao Login</button>
+            <button onclick="mudarTela('screen-login')" class="btn btn-outline" style="margin-top:30px;">Sair do Admin</button>
         </div>
 
         <div id="youtube-player-container" style="position: absolute; left: -9999px;"><div id="youtube-player"></div></div>
@@ -230,74 +230,130 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // BANCO DE DADOS - 30 GRANDES HITS DOS ÚLTIMOS 30 ANOS
         const bancoPadrao = [
-            { id: "1", provedor: "mp3", audio_url: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg", titulo: "Tema do Tetris", artista: "Videogame", genero: "Geek", inicio_segundos: 0, imagem_capa: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Tetris_logo.png/220px-Tetris_logo.png", opcoes_erradas: ["Super Mario - Nintendo", "Zelda - Nintendo", "Sonic - Sega"] },
-            { id: "2", provedor: "youtube", audio_url: "4NRXx6U8ABQ", titulo: "Blinding Lights", artista: "The Weeknd", genero: "Pop", inicio_segundos: 25, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36", opcoes_erradas: ["Starboy - The Weeknd", "As It Was - Harry Styles", "Levitating - Dua Lipa"] },
-            { id: "3", provedor: "youtube", audio_url: "JGwWNGJdvx8", titulo: "Shape of You", artista: "Ed Sheeran", genero: "Pop", inicio_segundos: 30, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96", opcoes_erradas: ["Perfect - Ed Sheeran", "Sorry - Justin Bieber", "Havana - Camila Cabello"] },
-            { id: "4", provedor: "youtube", audio_url: "ePjtnSPFWK8", titulo: "Evidências", artista: "Chitãozinho & Xororó", genero: "Sertanejo", inicio_segundos: 55, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2733979857d4287bb4a595738cb", opcoes_erradas: ["Fio de Cabelo - Chitãozinho", "É o Amor - Zezé", "Dormi na Praça - Bruno & Marrone"] },
-            { id: "5", provedor: "youtube", audio_url: "hTWKbfoikeg", titulo: "Smells Like Teen Spirit", artista: "Nirvana", genero: "Rock", inicio_segundos: 34, imagem_capa: "https://i.scdn.co/image/ab67616d0000b273e175a19e530c898d167d39bf", opcoes_erradas: ["Come As You Are - Nirvana", "Everlong - Foo Fighters", "Alive - Pearl Jam"] }
+            { id:"1", titulo:"Blinding Lights", artista:"The Weeknd", genero:"Pop", provedor:"youtube", audio_url:"4NRXx6U8ABQ", inicio_segundos:25, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36", opcoes_erradas:["Starboy - The Weeknd", "As It Was - Harry Styles", "Levitating - Dua Lipa"] },
+            { id:"2", titulo:"Shape of You", artista:"Ed Sheeran", genero:"Pop", provedor:"youtube", audio_url:"JGwWNGJdvx8", inicio_segundos:30, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96", opcoes_erradas:["Perfect - Ed Sheeran", "Sorry - Justin Bieber", "Havana - Camila Cabello"] },
+            { id:"3", titulo:"Smells Like Teen Spirit", artista:"Nirvana", genero:"Rock", provedor:"youtube", audio_url:"hTWKbfoikeg", inicio_segundos:34, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273e175a19e530c898d167d39bf", opcoes_erradas:["Come As You Are - Nirvana", "Everlong - Foo Fighters", "Alive - Pearl Jam"] },
+            { id:"4", titulo:"Bohemian Rhapsody", artista:"Queen", genero:"Rock", provedor:"youtube", audio_url:"fJ9rUzIMcZQ", inicio_segundos:50, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b", opcoes_erradas:["Stairway to Heaven - Led Zeppelin", "Don't Stop Me Now - Queen", "Hey Jude - The Beatles"] },
+            { id:"5", titulo:"Rolling in the Deep", artista:"Adele", genero:"Pop", provedor:"youtube", audio_url:"rYEDA3JcQqw", inicio_segundos:62, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273b06385d8a9e09d05e2637a23", opcoes_erradas:["Someone Like You - Adele", "Halo - Beyonce", "Just The Way You Are - Bruno Mars"] },
+            { id:"6", titulo:"Billie Jean", artista:"Michael Jackson", genero:"Pop", provedor:"youtube", audio_url:"Zi_XLOBDo_Y", inicio_segundos:80, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2733979857d4287bb4a595738cb", opcoes_erradas:["Beat It - Michael Jackson", "Thriller - Michael Jackson", "Stayin Alive - Bee Gees"] },
+            { id:"7", titulo:"Lose Yourself", artista:"Eminem", genero:"Hip-Hop", provedor:"youtube", audio_url:"_Yhyp-_hX2s", inicio_segundos:60, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273b6ef2ebd34efb08cb76f6eec", opcoes_erradas:["Without Me - Eminem", "In Da Club - 50 Cent", "Stronger - Kanye West"] },
+            { id:"8", titulo:"Toxic", artista:"Britney Spears", genero:"Pop", provedor:"youtube", audio_url:"LOZuxwVk7TU", inicio_segundos:35, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273cfb8b40a3d6076e0a8166c3a", opcoes_erradas:["Oops I Did It Again - Britney Spears", "Bad Romance - Lady Gaga", "Wannabe - Spice Girls"] },
+            { id:"9", titulo:"Uptown Funk", artista:"Mark Ronson ft. Bruno Mars", genero:"Pop", provedor:"youtube", audio_url:"OPf0YbXqDm0", inicio_segundos:50, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27376a8b1ec3c9327db07357062", opcoes_erradas:["24K Magic - Bruno Mars", "Treasure - Bruno Mars", "Get Lucky - Daft Punk"] },
+            { id:"10", titulo:"Numb", artista:"Linkin Park", genero:"Rock", provedor:"youtube", audio_url:"kXYiU_JCYtU", inicio_segundos:40, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273e2f0394827092147395c52c0", opcoes_erradas:["In The End - Linkin Park", "Bring Me To Life - Evanescence", "Chop Suey! - System Of A Down"] },
+            { id:"11", titulo:"Bad Romance", artista:"Lady Gaga", genero:"Pop", provedor:"youtube", audio_url:"qrO4YZeyl0I", inicio_segundos:60, imagem_capa:"", opcoes_erradas:["Poker Face - Lady Gaga", "Just Dance - Lady Gaga", "California Gurls - Katy Perry"] },
+            { id:"12", titulo:"Mr. Brightside", artista:"The Killers", genero:"Rock", provedor:"youtube", audio_url:"gGdGFtwPNwQ", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Somebody Told Me - The Killers", "Seven Nation Army - White Stripes", "Take Me Out - Franz Ferdinand"] },
+            { id:"13", titulo:"Crazy in Love", artista:"Beyoncé", genero:"R&B", provedor:"youtube", audio_url:"ViwtNLUqkMY", inicio_segundos:10, imagem_capa:"", opcoes_erradas:["Single Ladies - Beyoncé", "Umbrella - Rihanna", "No Scrubs - TLC"] },
+            { id:"14", titulo:"I Gotta Feeling", artista:"Black Eyed Peas", genero:"Pop", provedor:"youtube", audio_url:"uSD4vsh1zDA", inicio_segundos:35, imagem_capa:"", opcoes_erradas:["Boom Boom Pow - Black Eyed Peas", "Party Rock Anthem - LMFAO", "Tik Tok - Kesha"] },
+            { id:"15", titulo:"Hey Ya!", artista:"Outkast", genero:"Hip-Hop", provedor:"youtube", audio_url:"PWgvGjAhvIw", inicio_segundos:28, imagem_capa:"", opcoes_erradas:["Ms. Jackson - Outkast", "Gold Digger - Kanye West", "Drop It Like It's Hot - Snoop Dogg"] },
+            { id:"16", titulo:"Viva La Vida", artista:"Coldplay", genero:"Pop", provedor:"youtube", audio_url:"dvgZkm1xWPE", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Yellow - Coldplay", "Clocks - Coldplay", "Chasing Cars - Snow Patrol"] },
+            { id:"17", titulo:"Hips Don't Lie", artista:"Shakira", genero:"Pop", provedor:"youtube", audio_url:"DUT5rEU6pqM", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Waka Waka - Shakira", "Despacito - Luis Fonsi", "Danza Kuduro - Don Omar"] },
+            { id:"18", titulo:"As It Was", artista:"Harry Styles", genero:"Pop", provedor:"youtube", audio_url:"H5v3kku4y6Q", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Watermelon Sugar - Harry Styles", "Stay - The Kid LAROI", "Anti-Hero - Taylor Swift"] },
+            { id:"19", titulo:"Levitating", artista:"Dua Lipa", genero:"Pop", provedor:"youtube", audio_url:"TUVcZfQe-Kw", inicio_segundos:25, imagem_capa:"", opcoes_erradas:["Don't Start Now - Dua Lipa", "Say So - Doja Cat", "Good 4 U - Olivia Rodrigo"] },
+            { id:"20", titulo:"Californication", artista:"Red Hot Chili Peppers", genero:"Rock", provedor:"youtube", audio_url:"YlUKcNNmywk", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Otherside - RHCP", "Under The Bridge - RHCP", "Everlong - Foo Fighters"] },
+            { id:"21", titulo:"Wonderwall", artista:"Oasis", genero:"Rock", provedor:"youtube", audio_url:"6hzrDeceEKc", inicio_segundos:25, imagem_capa:"", opcoes_erradas:["Don't Look Back In Anger - Oasis", "Creep - Radiohead", "Bittersweet Symphony - The Verve"] },
+            { id:"22", titulo:"Shake It Off", artista:"Taylor Swift", genero:"Pop", provedor:"youtube", audio_url:"nfWlot6h_JM", inicio_segundos:35, imagem_capa:"", opcoes_erradas:["Blank Space - Taylor Swift", "Roar - Katy Perry", "Call Me Maybe - Carly Rae Jepsen"] },
+            { id:"23", titulo:"Despacito", artista:"Luis Fonsi ft. Daddy Yankee", genero:"Pop", provedor:"youtube", audio_url:"kJQP7kiw5Fk", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Mi Gente - J Balvin", "Bailando - Enrique Iglesias", "Taki Taki - DJ Snake"] },
+            { id:"24", titulo:"Bad Guy", artista:"Billie Eilish", genero:"Pop", provedor:"youtube", audio_url:"DyDfgMOUjCI", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Ocean Eyes - Billie Eilish", "Royals - Lorde", "Dance Monkey - Tones and I"] },
+            { id:"25", titulo:"Take Me To Church", artista:"Hozier", genero:"Rock", provedor:"youtube", audio_url:"PVjiKRfKpPI", inicio_segundos:50, imagem_capa:"", opcoes_erradas:["Radioactive - Imagine Dragons", "Stressed Out - Twenty One Pilots", "Somebody That I Used To Know - Gotye"] },
+            { id:"26", titulo:"Thinking Out Loud", artista:"Ed Sheeran", genero:"Pop", provedor:"youtube", audio_url:"lp-EO5I60KA", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Photograph - Ed Sheeran", "All of Me - John Legend", "Just The Way You Are - Bruno Mars"] },
+            { id:"27", titulo:"Creep", artista:"Radiohead", genero:"Rock", provedor:"youtube", audio_url:"XFkzRNyygfk", inicio_segundos:55, imagem_capa:"", opcoes_erradas:["Karma Police - Radiohead", "Losing My Religion - R.E.M.", "Smells Like Teen Spirit - Nirvana"] },
+            { id:"28", titulo:"Wannabe", artista:"Spice Girls", genero:"Pop", provedor:"youtube", audio_url:"gJLIiF15wjQ", inicio_segundos:15, imagem_capa:"", opcoes_erradas:["Everybody - Backstreet Boys", "Baby One More Time - Britney Spears", "No Scrubs - TLC"] },
+            { id:"29", titulo:"In Da Club", artista:"50 Cent", genero:"Hip-Hop", provedor:"youtube", audio_url:"5qm8Ao8kA2I", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Candy Shop - 50 Cent", "Drop It Like It's Hot - Snoop Dogg", "Yeah! - Usher"] },
+            { id:"30", titulo:"Flowers", artista:"Miley Cyrus", genero:"Pop", provedor:"youtube", audio_url:"G7KNmW9a75Y", inicio_segundos:28, imagem_capa:"", opcoes_erradas:["Wrecking Ball - Miley Cyrus", "Kill Bill - SZA", "Vampire - Olivia Rodrigo"] }
         ];
 
         let bancoDeMusicas = JSON.parse(localStorage.getItem('songguess_musicas')) || bancoPadrao;
-        let perfilUsuario = { nome: "", acertosTotais: 0 };
+        let perfilUsuario = { nome: "", avatar: "", acertosTotais: 0 };
+        
         let ytPlayer = null; 
         let mp3Player = new Audio();
         
-        // Efeitos Sonoros (SFX)
-        const sfxCorrect = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/41/Ding_Sound_Effect.ogg');
-        const sfxWrong = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/42/Error.ogg');
-        sfxCorrect.volume = 0.5; sfxWrong.volume = 0.5;
+        // Efeitos Sonoros Diretos (Confiáveis e rápidos)
+        const sfxCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+        const sfxWrong = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+        sfxCorrect.volume = 0.5; sfxWrong.volume = 0.3;
 
         let playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
-        let respostaFoiDada = false;
-        let autoPlayAtivo = true;
+        let respostaFoiDada = false, autoPlayAtivo = true;
 
+        // HELPER: Gerador de Avatar
+        function getAvatarUrl(nome, url) {
+            if(url && url.length > 5) return url;
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=181818&color=1db954&size=150`;
+        }
+
+        // --- SISTEMA DE TELAS E PERFIL ---
         function mudarTela(idTela) {
             document.querySelectorAll('.screen').forEach(tela => tela.classList.remove('active'));
             document.getElementById(idTela).classList.add('active');
-            if(idTela === 'screen-start') popularFiltrosIniciais();
+            
+            if(idTela === 'screen-start') {
+                popularFiltrosIniciais();
+                document.getElementById('nav-avatar').src = getAvatarUrl(perfilUsuario.nome, perfilUsuario.avatar);
+            }
+            if(idTela === 'screen-profile') {
+                document.getElementById('prof-name').value = perfilUsuario.nome;
+                document.getElementById('prof-avatar').value = perfilUsuario.avatar || "";
+                document.getElementById('profile-avatar-preview').src = getAvatarUrl(perfilUsuario.nome, perfilUsuario.avatar);
+                document.getElementById('profile-score-display').innerText = perfilUsuario.acertosTotais;
+            }
             if(idTela === 'screen-admin') {
                 renderizarListaAdmin();
-                document.getElementById('admin-perfil-nome').innerText = perfilUsuario.nome || 'Não Logado';
-                document.getElementById('admin-perfil-score').innerText = perfilUsuario.acertosTotais || 0;
             }
-        }
-
-        function mudarAbaAdmin(idAba) {
-            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.admin-tab-content').forEach(aba => aba.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(idAba).classList.add('active');
         }
 
         document.getElementById('btn-login').addEventListener('click', () => {
             const nome = document.getElementById('input-username').value.trim();
             if(!nome) return alert("Digite um nome!");
             let perfisSalvos = JSON.parse(localStorage.getItem('songguess_perfis')) || {};
-            perfilUsuario = perfisSalvos[nome] || { nome: nome, acertosTotais: 0 };
+            perfilUsuario = perfisSalvos[nome] || { nome: nome, avatar: "", acertosTotais: 0 };
             perfisSalvos[nome] = perfilUsuario;
             localStorage.setItem('songguess_perfis', JSON.stringify(perfisSalvos));
+            
             document.getElementById('user-display-name').innerText = perfilUsuario.nome;
             document.getElementById('game-username').innerText = perfilUsuario.nome;
             document.getElementById('game-total-score').innerText = perfilUsuario.acertosTotais;
             mudarTela('screen-start');
         });
 
-        function salvarPerfil() {
+        function salvarEdicaoPerfil() {
+            let novoNome = document.getElementById('prof-name').value.trim();
+            let novoAvatar = document.getElementById('prof-avatar').value.trim();
+            if(!novoNome) return alert("Nome não pode ficar vazio!");
+            
+            let perfisSalvos = JSON.parse(localStorage.getItem('songguess_perfis')) || {};
+            // Remove chave antiga se mudou de nome (para não duplicar)
+            if(novoNome !== perfilUsuario.nome && perfisSalvos[perfilUsuario.nome]) {
+                delete perfisSalvos[perfilUsuario.nome];
+            }
+            
+            perfilUsuario.nome = novoNome;
+            perfilUsuario.avatar = novoAvatar;
+            perfisSalvos[novoNome] = perfilUsuario;
+            localStorage.setItem('songguess_perfis', JSON.stringify(perfisSalvos));
+            
+            document.getElementById('user-display-name').innerText = perfilUsuario.nome;
+            document.getElementById('game-username').innerText = perfilUsuario.nome;
+            document.getElementById('profile-avatar-preview').src = getAvatarUrl(perfilUsuario.nome, perfilUsuario.avatar);
+            alert("Perfil salvo com sucesso!");
+        }
+
+        function salvarScore() {
             let perfisSalvos = JSON.parse(localStorage.getItem('songguess_perfis')) || {};
             perfisSalvos[perfilUsuario.nome] = perfilUsuario;
             localStorage.setItem('songguess_perfis', JSON.stringify(perfisSalvos));
             document.getElementById('game-total-score').innerText = perfilUsuario.acertosTotais;
-            if(document.getElementById('screen-admin').classList.contains('active')){
-                document.getElementById('admin-perfil-score').innerText = perfilUsuario.acertosTotais;
-            }
         }
 
+        // --- FILTROS ---
         function popularFiltrosIniciais() {
             bancoDeMusicas = JSON.parse(localStorage.getItem('songguess_musicas')) || bancoPadrao;
             document.getElementById('select-category-type').value = 'tudo';
             atualizarSubCategorias();
         }
+        
         function atualizarSubCategorias() {
             const tipo = document.getElementById('select-category-type').value;
             const container = document.getElementById('group-subcategory');
@@ -310,16 +366,15 @@
             valoresUnicos.forEach(val => select.innerHTML += `<option value="${val}">${val}</option>`);
         }
 
+        // --- GAMEPLAY ---
         document.getElementById('btn-start').addEventListener('click', () => {
             modoJogo = document.getElementById('select-mode').value;
             let qtdPedida = parseInt(document.getElementById('select-rounds').value);
             let tipoFiltro = document.getElementById('select-category-type').value;
             
-            // CONFIGURAÇÕES NOVAS
             tempoLimite = parseInt(document.getElementById('input-duration').value) || 12;
             autoPlayAtivo = document.getElementById('check-autoplay').checked;
             
-            // FILTRO MULTIPLA SELEÇÃO
             let selectSub = document.getElementById('select-subcategory');
             let selecionados = Array.from(selectSub.selectedOptions).map(opt => opt.value);
             
@@ -346,22 +401,19 @@
             let musica = playlistJogo[rodadaAtual];
             document.getElementById('current-round-text').innerText = rodadaAtual + 1;
             
-            document.getElementById('music-cover-img').src = musica.imagem_capa || 'https://via.placeholder.com/150/282828/FFFFFF?text=SongGuess';
+            document.getElementById('music-cover-img').src = getAvatarUrl(musica.artista, musica.imagem_capa);
             document.getElementById('music-genre-badge').innerText = musica.genero || 'Mix';
             document.getElementById('progress-bar').style.width = "0%";
             document.getElementById('status-text').innerText = autoPlayAtivo ? "Prepare-se..." : "Clique para ouvir a música!";
             
             const btnPlay = document.getElementById('btn-play');
-            btnPlay.innerText = `▶ Ouvir Trecho (${tempoLimite}s)`; btnPlay.disabled = false;
+            btnPlay.innerText = `▶ Ouvir (${tempoLimite}s)`; btnPlay.disabled = false;
 
             let provedor = musica.provedor || 'youtube';
             if(provedor === 'mp3') {
-                mp3Player.src = musica.audio_url;
-                mp3Player.currentTime = musica.inicio_segundos;
+                mp3Player.src = musica.audio_url; mp3Player.currentTime = musica.inicio_segundos;
             } else {
-                if(ytPlayer && ytPlayer.cueVideoById) { 
-                    ytPlayer.cueVideoById({ videoId: musica.audio_url, startSeconds: musica.inicio_segundos }); 
-                }
+                if(ytPlayer && ytPlayer.cueVideoById) ytPlayer.cueVideoById({ videoId: musica.audio_url, startSeconds: musica.inicio_segundos }); 
             }
 
             if (modoJogo === 'alternativas') {
@@ -382,33 +434,21 @@
                 btnTxt.innerText = "Confirmar"; btnTxt.className = "btn btn-outline"; btnTxt.disabled = false;
             }
 
-            // Lógica do Auto-play
-            if(autoPlayAtivo) {
-                // Pequeno delay para a API do YT processar o cueVideoById
-                setTimeout(iniciarReproducao, 800);
-            }
+            if(autoPlayAtivo) setTimeout(iniciarReproducao, 800);
         }
 
-        // Função separada para poder ser chamada pelo botão e pelo Auto-play
         function iniciarReproducao() {
-            if(respostaFoiDada) return; // Segurança
+            if(respostaFoiDada) return; 
             const btnPlay = document.getElementById('btn-play');
             let musica = playlistJogo[rodadaAtual];
             let provedor = musica.provedor || 'youtube';
             
             try {
-                if(provedor === 'mp3') {
-                    mp3Player.play();
-                } else {
-                    if(!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
-                        throw new Error("YouTube API not ready");
-                    }
-                    ytPlayer.playVideo(); 
-                }
+                if(provedor === 'mp3') mp3Player.play();
+                else { if(ytPlayer && typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo(); }
             } catch(e) {
-                console.log(e);
-                if(autoPlayAtivo) document.getElementById('status-text').innerText = "Seu navegador bloqueou o autoplay. Clique no botão para ouvir.";
-                return; // Aborta o timer se o som foi bloqueado
+                if(autoPlayAtivo) document.getElementById('status-text').innerText = "Autoplay bloqueado. Clique no botão.";
+                return; 
             }
             
             btnPlay.disabled = true; btnPlay.innerText = "🎵 Tocando...";
@@ -419,19 +459,13 @@
                 tempo += 0.1; document.getElementById('progress-bar').style.width = `${(tempo / tempoLimite) * 100}%`;
                 if (tempo >= tempoLimite) {
                     clearInterval(timerProgresso); 
-                    if(provedor === 'mp3') {
-                        mp3Player.pause();
-                        mp3Player.currentTime = musica.inicio_segundos;
-                    } else {
-                        ytPlayer.pauseVideo(); 
-                        ytPlayer.seekTo(musica.inicio_segundos);
-                    }
+                    if(provedor === 'mp3') { mp3Player.pause(); mp3Player.currentTime = musica.inicio_segundos; } 
+                    else { ytPlayer.pauseVideo(); ytPlayer.seekTo(musica.inicio_segundos); }
                     btnPlay.disabled = false; btnPlay.innerText = `▶ Ouvir Novamente`;
                 }
             }, 100);
         }
 
-        // Event listener do botão Play aponta para a nova função
         document.getElementById('btn-play').addEventListener('click', iniciarReproducao);
 
         document.getElementById('btn-submit-text').addEventListener('click', function() {
@@ -443,8 +477,7 @@
 
         function verificarResposta(resposta, elemento, isTexto = false) {
             if(respostaFoiDada) return;
-            respostaFoiDada = true; 
-            clearInterval(timerProgresso);
+            respostaFoiDada = true; clearInterval(timerProgresso);
             
             let musica = playlistJogo[rodadaAtual];
             let provedor = musica.provedor || 'youtube';
@@ -457,12 +490,8 @@
             if (modoJogo === 'alternativas' && resposta === respostaCertaCompleta) acertou = true;
             if (modoJogo === 'digitar' && resposta === "CORRETO") acertou = true;
 
-            // SFX
-            if(acertou) {
-                sfxCorrect.currentTime = 0; sfxCorrect.play();
-            } else {
-                sfxWrong.currentTime = 0; sfxWrong.play();
-            }
+            // SFX Play
+            try { if(acertou) { sfxCorrect.currentTime=0; sfxCorrect.play(); } else { sfxWrong.currentTime=0; sfxWrong.play(); } } catch(e){}
 
             if (modoJogo === 'alternativas') {
                 let botoes = document.querySelectorAll('.option-btn');
@@ -477,13 +506,13 @@
                 if(acertou) {
                     inputTxt.classList.add('input-correct'); elemento.innerText = "✔ Exato!"; elemento.classList.add('btn', 'correct-choice');
                 } else {
-                    inputTxt.classList.add('input-wrong'); inputTxt.value = `Errou. Era: ${musica.titulo}`; elemento.innerText = "✖"; elemento.classList.add('btn', 'wrong-choice');
+                    inputTxt.classList.add('input-wrong'); inputTxt.value = `Errou: ${musica.titulo}`; elemento.innerText = "✖"; elemento.classList.add('btn', 'wrong-choice');
                 }
             }
 
             document.getElementById(`dot-${rodadaAtual}`).classList.add(acertou ? 'correct' : 'wrong');
             historicoPartida.push({ titulo: musica.titulo, artista: musica.artista, acertou: acertou });
-            if(acertou) { perfilUsuario.acertosTotais += 1; salvarPerfil(); }
+            if(acertou) { perfilUsuario.acertosTotais += 1; salvarScore(); }
 
             setTimeout(() => {
                 rodadaAtual++;
@@ -503,11 +532,9 @@
             });
         }
 
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('youtube-player', { height: '0', width: '0', playerVars: { 'autoplay': 0, 'controls': 0 } });
-        }
+        function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('youtube-player', { height: '0', width: '0', playerVars: { 'autoplay': 0, 'controls': 0 } }); }
 
-        // --- ADMIN LISTA E EDIÇÃO E EXCLUSÃO ---
+        // --- ADMIN LISTA E EXCLUSÃO EM MASSA ---
         function renderizarListaAdmin() {
             const divList = document.getElementById('admin-music-list');
             divList.innerHTML = '';
@@ -516,49 +543,50 @@
                 let provBadge = prov === 'mp3' ? '<span class="provider-badge badge-mp3">MP3</span>' : '<span class="provider-badge badge-yt">YT</span>';
                 divList.innerHTML += `
                     <div class="admin-song-item">
+                        <input type="checkbox" class="check-delete" value="${m.id}" style="width:16px; height:16px; cursor:pointer;">
                         <div style="flex:1;"><b>${m.titulo}</b> - ${m.artista} ${provBadge}</div>
                         <div>
-                            <button class="btn-edit" onclick="prepararEdicao('${m.id}')">✏️ Edit</button>
-                            <button class="btn-delete" onclick="adminExcluirMusica('${m.id}')">🗑️</button>
+                            <button class="btn-action" onclick="prepararEdicao('${m.id}')">✏️</button>
+                            <button class="btn-action" style="color:var(--wrong)" onclick="adminExcluirUnico('${m.id}')">🗑️</button>
                         </div>
                     </div>`;
             });
         }
 
-        function adminExcluirMusica(id) {
-            if(confirm("Tem certeza que deseja excluir esta música do banco?")) {
+        function adminExcluirUnico(id) {
+            if(confirm("Excluir esta música?")) {
                 bancoDeMusicas = bancoDeMusicas.filter(m => m.id !== id);
                 localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas));
                 renderizarListaAdmin();
             }
         }
 
+        function adminExcluirSelecionados() {
+            let marcados = document.querySelectorAll('.check-delete:checked');
+            if(marcados.length === 0) return alert("Selecione pelo menos uma música marcando a caixinha na lista.");
+            if(confirm(`Tem certeza que deseja excluir as ${marcados.length} músicas selecionadas?`)) {
+                let idsExcluir = Array.from(marcados).map(cb => cb.value);
+                bancoDeMusicas = bancoDeMusicas.filter(m => !idsExcluir.includes(m.id));
+                localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas));
+                renderizarListaAdmin();
+            }
+        }
+
         function prepararEdicao(id) {
-            let m = bancoDeMusicas.find(x => x.id === id);
-            if(!m) return;
-            document.getElementById('edit-id').value = m.id;
-            document.getElementById('admin-form-title').innerText = "✏️ Editando: " + m.titulo;
-            document.getElementById('add-titulo').value = m.titulo;
-            document.getElementById('add-artista').value = m.artista;
-            document.getElementById('add-genero').value = m.genero;
-            document.getElementById('add-provedor').value = m.provedor || 'youtube';
-            document.getElementById('add-link').value = m.audio_url || m.youtube_id; 
-            document.getElementById('add-img').value = m.imagem_capa || '';
+            let m = bancoDeMusicas.find(x => x.id === id); if(!m) return;
+            document.getElementById('edit-id').value = m.id; document.getElementById('admin-form-title').innerText = "✏️ Editando: " + m.titulo;
+            document.getElementById('add-titulo').value = m.titulo; document.getElementById('add-artista').value = m.artista;
+            document.getElementById('add-genero').value = m.genero; document.getElementById('add-provedor').value = m.provedor || 'youtube';
+            document.getElementById('add-link').value = m.audio_url || m.youtube_id; document.getElementById('add-img').value = m.imagem_capa || '';
             document.getElementById('add-inicio').value = m.inicio_segundos;
-            document.getElementById('add-erro1').value = m.opcoes_erradas[0];
-            document.getElementById('add-erro2').value = m.opcoes_erradas[1];
-            document.getElementById('add-erro3').value = m.opcoes_erradas[2];
-            
-            document.getElementById('btn-save-music').innerText = "🔄 Atualizar Música";
-            document.getElementById('btn-cancel-edit').style.display = "inline-block";
+            document.getElementById('add-erro1').value = m.opcoes_erradas[0]; document.getElementById('add-erro2').value = m.opcoes_erradas[1]; document.getElementById('add-erro3').value = m.opcoes_erradas[2];
+            document.getElementById('btn-save-music').innerText = "🔄 Atualizar"; document.getElementById('btn-cancel-edit').style.display = "inline-block";
             document.getElementById('admin-form-title').scrollIntoView({behavior: "smooth"});
         }
 
         function limparFormularioAdmin() {
-            document.getElementById('edit-id').value = '';
-            document.getElementById('admin-form-title').innerText = "➕ Adicionar Nova Música";
-            document.getElementById('btn-save-music').innerText = "Salvar Música";
-            document.getElementById('btn-cancel-edit').style.display = "none";
+            document.getElementById('edit-id').value = ''; document.getElementById('admin-form-title').innerText = "➕ Adicionar Nova Música";
+            document.getElementById('btn-save-music').innerText = "Salvar Música"; document.getElementById('btn-cancel-edit').style.display = "none";
             document.getElementById('add-provedor').value = 'youtube';
             document.querySelectorAll('#aba-playlist input[type="text"], #aba-playlist input[type="number"], #aba-playlist input[type="hidden"]').forEach(i => i.value = '');
         }
@@ -572,31 +600,13 @@
                 e1 = document.getElementById('add-erro1').value, e2 = document.getElementById('add-erro2').value, e3 = document.getElementById('add-erro3').value;
 
             if(!tit || !art || !lnk || !gen) return alert("Preencha Título, Artista, Gênero e Link!");
-
             let finalLink = lnk;
-            if(prov === 'youtube') {
-                let match = lnk.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-                finalLink = (match && match[2].length === 11) ? match[2] : lnk;
-            }
+            if(prov === 'youtube') { let match = lnk.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); finalLink = (match && match[2].length === 11) ? match[2] : lnk; }
 
-            let obj = {
-                id: idEdit ? idEdit : Date.now().toString(),
-                titulo: tit, artista: art, genero: gen, 
-                provedor: prov, audio_url: finalLink, 
-                inicio_segundos: parseInt(ini) || 0, imagem_capa: img,
-                opcoes_erradas: [e1||"Erro 1", e2||"Erro 2", e3||"Erro 3"]
-            };
-
-            if(idEdit) { 
-                let index = bancoDeMusicas.findIndex(x => x.id === idEdit);
-                bancoDeMusicas[index] = obj; alert("Música ATUALIZADA!");
-            } else { 
-                bancoDeMusicas.push(obj); alert("Nova música ADICIONADA!");
-            }
-
-            localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas));
-            limparFormularioAdmin();
-            renderizarListaAdmin();
+            let obj = { id: idEdit ? idEdit : Date.now().toString(), titulo: tit, artista: art, genero: gen, provedor: prov, audio_url: finalLink, inicio_segundos: parseInt(ini) || 0, imagem_capa: img, opcoes_erradas: [e1||"Erro 1", e2||"Erro 2", e3||"Erro 3"] };
+            if(idEdit) { let index = bancoDeMusicas.findIndex(x => x.id === idEdit); bancoDeMusicas[index] = obj; alert("Música ATUALIZADA!"); } 
+            else { bancoDeMusicas.push(obj); alert("Nova música ADICIONADA!"); }
+            localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); limparFormularioAdmin(); renderizarListaAdmin();
         }
 
         function exportarJSON(tipo) {
@@ -607,22 +617,17 @@
         }
         
         function importarJSON(e, tipo) {
-            const f = e.target.files[0]; if (!f) return;
-            const r = new FileReader();
+            const f = e.target.files[0]; if (!f) return; const r = new FileReader();
             r.onload = function(evt) {
                 try { 
                     let obj = JSON.parse(evt.target.result);
                     if(tipo === 'musicas') {
-                        if(!Array.isArray(obj)) return alert("Arquivo de playlist inválido!");
+                        if(!Array.isArray(obj)) return alert("Arquivo inválido!");
                         obj.forEach(m => { if(!m.audio_url && m.youtube_id) { m.audio_url = m.youtube_id; m.provedor = 'youtube'; }});
-                        bancoDeMusicas = obj; localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); 
-                        alert("Playlist JSON importada!"); renderizarListaAdmin(); 
+                        bancoDeMusicas = obj; localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); alert("Playlist importada!"); renderizarListaAdmin(); 
                     } else if(tipo === 'perfil') {
                         if(obj.nome === undefined) return alert("Arquivo de perfil inválido!");
-                        perfilUsuario = obj; salvarPerfil();
-                        document.getElementById('admin-perfil-nome').innerText = perfilUsuario.nome;
-                        document.getElementById('admin-perfil-score').innerText = perfilUsuario.acertosTotais;
-                        alert(`Perfil importado com sucesso!`);
+                        perfilUsuario = obj; salvarScore(); mudarTela('screen-profile'); alert(`Perfil importado com sucesso!`);
                     }
                 } catch (err) { alert("Erro ao ler JSON."); }
             }; r.readAsText(f);
@@ -630,41 +635,26 @@
 
         function exportarCSV() {
             let cabecalho = "id;titulo;artista;genero;provedor;audio_url;inicio_segundos;imagem_capa;erro1;erro2;erro3\n";
-            let linhas = bancoDeMusicas.map(m => {
-                let prov = m.provedor || 'youtube';
-                let url = m.audio_url || m.youtube_id;
-                return `${m.id};${m.titulo};${m.artista};${m.genero};${prov};${url};${m.inicio_segundos};${m.imagem_capa || ''};${m.opcoes_erradas[0]};${m.opcoes_erradas[1]};${m.opcoes_erradas[2]}`;
-            }).join('\n');
+            let linhas = bancoDeMusicas.map(m => { let prov = m.provedor || 'youtube'; let url = m.audio_url || m.youtube_id; return `${m.id};${m.titulo};${m.artista};${m.genero};${prov};${url};${m.inicio_segundos};${m.imagem_capa || ''};${m.opcoes_erradas[0]};${m.opcoes_erradas[1]};${m.opcoes_erradas[2]}`; }).join('\n');
             let dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(cabecalho + linhas);
             let a = document.createElement('a'); a.href = dataStr; a.download = 'songguess_planilha.csv'; document.body.appendChild(a); a.click(); a.remove();
         }
 
         function importarCSV(e) {
-            const f = e.target.files[0]; if (!f) return;
-            const r = new FileReader();
+            const f = e.target.files[0]; if (!f) return; const r = new FileReader();
             r.onload = function(evt) {
                 try {
-                    let texto = evt.target.result;
-                    let linhas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                    if(linhas.length < 2) return alert("Planilha vazia ou inválida.");
-                    
+                    let texto = evt.target.result; let linhas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                    if(linhas.length < 2) return alert("Planilha vazia.");
                     let novoBanco = [];
                     for(let i = 1; i < linhas.length; i++) {
                         let cols = linhas[i].split(';');
                         if(cols.length >= 7) {
-                            novoBanco.push({
-                                id: cols[0], titulo: cols[1], artista: cols[2], genero: cols[3],
-                                provedor: cols[4], audio_url: cols[5],
-                                inicio_segundos: parseInt(cols[6]) || 0, imagem_capa: cols[7] || '',
-                                opcoes_erradas: [cols[8]||"Err 1", cols[9]||"Err 2", cols[10]||"Err 3"]
-                            });
+                            novoBanco.push({ id: cols[0], titulo: cols[1], artista: cols[2], genero: cols[3], provedor: cols[4], audio_url: cols[5], inicio_segundos: parseInt(cols[6]) || 0, imagem_capa: cols[7] || '', opcoes_erradas: [cols[8]||"Err 1", cols[9]||"Err 2", cols[10]||"Err 3"] });
                         }
                     }
-                    bancoDeMusicas = novoBanco;
-                    localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas));
-                    alert("Planilha CSV importada com sucesso!");
-                    renderizarListaAdmin();
-                } catch (err) { alert("Erro ao ler CSV."); }
+                    bancoDeMusicas = novoBanco; localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); alert("CSV importado!"); renderizarListaAdmin();
+                } catch (err) { alert("Erro CSV."); }
             }; r.readAsText(f);
         }
     </script>
