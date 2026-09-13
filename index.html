@@ -69,6 +69,7 @@
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
         .header-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
+        /* Admin List Custom */
         .admin-song-list { max-height: 200px; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; border: 1px solid var(--border-color); margin-bottom: 10px;}
         .admin-song-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color); font-size: 13px; gap: 10px;}
         .admin-song-item:last-child { border-bottom: none; }
@@ -217,7 +218,7 @@
             
             <!-- Opções de Compartilhamento -->
             <div style="background:rgba(0,0,0,0.2); padding:15px; border-radius:10px; margin-bottom:15px;">
-                <label class="checkbox-label" style="font-size: 13px; justify-content:center;"><input type="checkbox" id="check-share-info" checked> Incluir Filtros/Categoria no Share</label>
+                <label class="checkbox-label" style="font-size: 13px; justify-content:center;"><input type="checkbox" id="check-share-info" checked> Incluir Filtros no Share</label>
                 <button onclick="compartilharResultado()" class="btn" style="background:#25D366; color:white; margin-top:10px;">🔗 Copiar Resultado (Share)</button>
             </div>
 
@@ -280,7 +281,7 @@
                         <option value="total_played">Total de Partidas Jogadas</option>
                     </select>
                 </div>
-                <div class="input-group"><input type="number" id="achiev-target" placeholder="Alvo (Ex: 10)"></div>
+                <div class="input-group"><input type="number" id="achiev-target" placeholder="Alvo Numérico (Ex: 10)"></div>
                 <button onclick="adminCriarConquista()" class="btn">➕ Adicionar Conquista</button>
 
                 <h3 style="margin-top:20px;">Conquistas Atuais</h3>
@@ -291,12 +292,12 @@
             <div id="aba-banco" class="admin-tab-content">
                 <h3>Banco de Músicas</h3>
                 <div class="admin-grid">
-                    <button onclick="exportarJSON('musicas')" class="btn btn-outline btn-small">📥 Export JSON (Playlist)</button>
-                    <div style="position: relative;"><button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Import JSON (Playlist)</button><input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'musicas')"></div>
+                    <button onclick="exportarJSON('musicas')" class="btn btn-outline btn-small">📥 Export JSON</button>
+                    <div style="position: relative;"><button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Import JSON</button><input type="file" accept=".json" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarJSON(event, 'musicas')"></div>
                 </div>
                 <div class="admin-grid">
-                    <button onclick="exportarCSV()" class="btn btn-outline btn-small">📥 Export CSV (Planilha)</button>
-                    <div style="position: relative;"><button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Import CSV (Planilha)</button><input type="file" accept=".csv" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarCSV(event)"></div>
+                    <button onclick="exportarCSV()" class="btn btn-outline btn-small">📥 Export CSV</button>
+                    <div style="position: relative;"><button class="btn btn-outline btn-small w-100" style="width:100%;">📤 Import CSV</button><input type="file" accept=".csv" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" onchange="importarCSV(event)"></div>
                 </div>
                 
                 <h3 style="margin-top:20px;">Regras e Conquistas (Settings)</h3>
@@ -325,8 +326,28 @@
             { id:"7", titulo:"Lose Yourself", artista:"Eminem", genero:"Hip-Hop", provedor:"youtube", audio_url:"_Yhyp-_hX2s", inicio_segundos:60, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273b6ef2ebd34efb08cb76f6eec", opcoes_erradas:["Without Me - Eminem", "In Da Club - 50 Cent", "Stronger - Kanye West"] },
             { id:"8", titulo:"Toxic", artista:"Britney Spears", genero:"Pop", provedor:"youtube", audio_url:"LOZuxwVk7TU", inicio_segundos:35, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273cfb8b40a3d6076e0a8166c3a", opcoes_erradas:["Oops I Did It Again - Britney Spears", "Bad Romance - Lady Gaga", "Wannabe - Spice Girls"] },
             { id:"9", titulo:"Uptown Funk", artista:"Mark Ronson ft. Bruno Mars", genero:"Pop", provedor:"youtube", audio_url:"OPf0YbXqDm0", inicio_segundos:50, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27376a8b1ec3c9327db07357062", opcoes_erradas:["24K Magic - Bruno Mars", "Treasure - Bruno Mars", "Get Lucky - Daft Punk"] },
-            { id:"10", titulo:"Numb", artista:"Linkin Park", genero:"Rock", provedor:"youtube", audio_url:"kXYiU_JCYtU", inicio_segundos:40, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273e2f0394827092147395c52c0", opcoes_erradas:["In The End - Linkin Park", "Bring Me To Life - Evanescence", "Chop Suey! - System Of A Down"] }
-        ]; // Reduzido aqui no visual por espaço, mas você pode usar as 30 do anterior.
+            { id:"10", titulo:"Numb", artista:"Linkin Park", genero:"Rock", provedor:"youtube", audio_url:"kXYiU_JCYtU", inicio_segundos:40, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273e2f0394827092147395c52c0", opcoes_erradas:["In The End - Linkin Park", "Bring Me To Life - Evanescence", "Chop Suey! - System Of A Down"] },
+            { id:"11", titulo:"Bad Romance", artista:"Lady Gaga", genero:"Pop", provedor:"youtube", audio_url:"qrO4YZeyl0I", inicio_segundos:60, imagem_capa:"", opcoes_erradas:["Poker Face - Lady Gaga", "Just Dance - Lady Gaga", "California Gurls - Katy Perry"] },
+            { id:"12", titulo:"Mr. Brightside", artista:"The Killers", genero:"Rock", provedor:"youtube", audio_url:"gGdGFtwPNwQ", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Somebody Told Me - The Killers", "Seven Nation Army - White Stripes", "Take Me Out - Franz Ferdinand"] },
+            { id:"13", titulo:"Crazy in Love", artista:"Beyoncé", genero:"R&B", provedor:"youtube", audio_url:"ViwtNLUqkMY", inicio_segundos:10, imagem_capa:"", opcoes_erradas:["Single Ladies - Beyoncé", "Umbrella - Rihanna", "No Scrubs - TLC"] },
+            { id:"14", titulo:"I Gotta Feeling", artista:"Black Eyed Peas", genero:"Pop", provedor:"youtube", audio_url:"uSD4vsh1zDA", inicio_segundos:35, imagem_capa:"", opcoes_erradas:["Boom Boom Pow - Black Eyed Peas", "Party Rock Anthem - LMFAO", "Tik Tok - Kesha"] },
+            { id:"15", titulo:"Hey Ya!", artista:"Outkast", genero:"Hip-Hop", provedor:"youtube", audio_url:"PWgvGjAhvIw", inicio_segundos:28, imagem_capa:"", opcoes_erradas:["Ms. Jackson - Outkast", "Gold Digger - Kanye West", "Drop It Like It's Hot - Snoop Dogg"] },
+            { id:"16", titulo:"Viva La Vida", artista:"Coldplay", genero:"Pop", provedor:"youtube", audio_url:"dvgZkm1xWPE", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Yellow - Coldplay", "Clocks - Coldplay", "Chasing Cars - Snow Patrol"] },
+            { id:"17", titulo:"Hips Don't Lie", artista:"Shakira", genero:"Pop", provedor:"youtube", audio_url:"DUT5rEU6pqM", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Waka Waka - Shakira", "Despacito - Luis Fonsi", "Danza Kuduro - Don Omar"] },
+            { id:"18", titulo:"As It Was", artista:"Harry Styles", genero:"Pop", provedor:"youtube", audio_url:"H5v3kku4y6Q", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Watermelon Sugar - Harry Styles", "Stay - The Kid LAROI", "Anti-Hero - Taylor Swift"] },
+            { id:"19", titulo:"Levitating", artista:"Dua Lipa", genero:"Pop", provedor:"youtube", audio_url:"TUVcZfQe-Kw", inicio_segundos:25, imagem_capa:"", opcoes_erradas:["Don't Start Now - Dua Lipa", "Say So - Doja Cat", "Good 4 U - Olivia Rodrigo"] },
+            { id:"20", titulo:"Californication", artista:"Red Hot Chili Peppers", genero:"Rock", provedor:"youtube", audio_url:"YlUKcNNmywk", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Otherside - RHCP", "Under The Bridge - RHCP", "Everlong - Foo Fighters"] },
+            { id:"21", titulo:"Wonderwall", artista:"Oasis", genero:"Rock", provedor:"youtube", audio_url:"6hzrDeceEKc", inicio_segundos:25, imagem_capa:"", opcoes_erradas:["Don't Look Back In Anger - Oasis", "Creep - Radiohead", "Bittersweet Symphony - The Verve"] },
+            { id:"22", titulo:"Shake It Off", artista:"Taylor Swift", genero:"Pop", provedor:"youtube", audio_url:"nfWlot6h_JM", inicio_segundos:35, imagem_capa:"", opcoes_erradas:["Blank Space - Taylor Swift", "Roar - Katy Perry", "Call Me Maybe - Carly Rae Jepsen"] },
+            { id:"23", titulo:"Despacito", artista:"Luis Fonsi", genero:"Pop", provedor:"youtube", audio_url:"kJQP7kiw5Fk", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Mi Gente - J Balvin", "Bailando - Enrique Iglesias", "Taki Taki - DJ Snake"] },
+            { id:"24", titulo:"Bad Guy", artista:"Billie Eilish", genero:"Pop", provedor:"youtube", audio_url:"DyDfgMOUjCI", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Ocean Eyes - Billie Eilish", "Royals - Lorde", "Dance Monkey - Tones and I"] },
+            { id:"25", titulo:"Take Me To Church", artista:"Hozier", genero:"Rock", provedor:"youtube", audio_url:"PVjiKRfKpPI", inicio_segundos:50, imagem_capa:"", opcoes_erradas:["Radioactive - Imagine Dragons", "Stressed Out - Twenty One Pilots", "Somebody That I Used To Know - Gotye"] },
+            { id:"26", titulo:"Thinking Out Loud", artista:"Ed Sheeran", genero:"Pop", provedor:"youtube", audio_url:"lp-EO5I60KA", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Photograph - Ed Sheeran", "All of Me - John Legend", "Just The Way You Are - Bruno Mars"] },
+            { id:"27", titulo:"Creep", artista:"Radiohead", genero:"Rock", provedor:"youtube", audio_url:"XFkzRNyygfk", inicio_segundos:55, imagem_capa:"", opcoes_erradas:["Karma Police - Radiohead", "Losing My Religion - R.E.M.", "Smells Like Teen Spirit - Nirvana"] },
+            { id:"28", titulo:"Wannabe", artista:"Spice Girls", genero:"Pop", provedor:"youtube", audio_url:"gJLIiF15wjQ", inicio_segundos:15, imagem_capa:"", opcoes_erradas:["Everybody - Backstreet Boys", "Baby One More Time - Britney Spears", "No Scrubs - TLC"] },
+            { id:"29", titulo:"In Da Club", artista:"50 Cent", genero:"Hip-Hop", provedor:"youtube", audio_url:"5qm8Ao8kA2I", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Candy Shop - 50 Cent", "Drop It Like It's Hot - Snoop Dogg", "Yeah! - Usher"] },
+            { id:"30", titulo:"Flowers", artista:"Miley Cyrus", genero:"Pop", provedor:"youtube", audio_url:"G7KNmW9a75Y", inicio_segundos:28, imagem_capa:"", opcoes_erradas:["Wrecking Ball - Miley Cyrus", "Kill Bill - SZA", "Vampire - Olivia Rodrigo"] }
+        ];
 
         // Settings (Regras e Conquistas do Admin)
         let gameConfig = JSON.parse(localStorage.getItem('songguess_config')) || {
@@ -349,7 +370,7 @@
         // Variáveis de Estado da Partida
         let playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
         let respostaFoiDada = false, autoPlayAtivo = true, acertosConsecutivosSessao = 0;
-        let filtroAplicadoLabel = ""; // Para usar no Compartilhar
+        let filtroAplicadoLabel = ""; 
 
         // ================= FUNÇÕES CORE =================
         function getAvatarUrl(nome, url) {
@@ -357,7 +378,6 @@
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=181818&color=1db954&size=150`;
         }
 
-        // --- SISTEMA DE TELAS ---
         function mudarTela(idTela) {
             document.querySelectorAll('.screen').forEach(tela => tela.classList.remove('active'));
             document.getElementById(idTela).classList.add('active');
@@ -373,9 +393,7 @@
                 renderizarConquistasPerfil();
                 if(!gameConfig.achievementsEnabled) document.getElementById('title-achievements-profile').style.display = 'none';
             }
-            if(idTela === 'screen-admin') {
-                renderizarListaAdmin(); renderizarAdminConfig();
-            }
+            if(idTela === 'screen-admin') { renderizarListaAdmin(); renderizarAdminConfig(); }
             if(idTela === 'screen-settings') {
                 document.getElementById('select-theme').value = userSettings.theme;
                 document.getElementById('check-sfx').checked = userSettings.sfx;
@@ -385,19 +403,17 @@
         function mudarAbaAdmin(idAba) {
             document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.admin-tab-content').forEach(aba => aba.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(idAba).classList.add('active');
+            event.target.classList.add('active'); document.getElementById(idAba).classList.add('active');
         }
 
-        // --- LOGIN E PERFIL (AVATAR CORRIGIDO) ---
+        // --- LOGIN E PERFIL ---
         document.getElementById('btn-login').addEventListener('click', () => {
             const nome = document.getElementById('input-username').value.trim();
             if(!nome) return alert("Digite um nome!");
             let perfisSalvos = JSON.parse(localStorage.getItem('songguess_perfis')) || {};
             
-            if(perfisSalvos[nome]) {
-                perfilUsuario = perfisSalvos[nome];
-            } else {
+            if(perfisSalvos[nome]) { perfilUsuario = perfisSalvos[nome]; } 
+            else {
                 perfilUsuario = { nome: nome, avatar: "", desbloqueios: [], partidasJogadas: 0 };
                 perfisSalvos[nome] = perfilUsuario;
                 localStorage.setItem('songguess_perfis', JSON.stringify(perfisSalvos));
@@ -409,7 +425,6 @@
             mudarTela('screen-start');
         });
 
-        // UPLOAD FOTO GALERIA (COMPRESSÃO BASE64)
         document.getElementById('prof-avatar-file').addEventListener('change', function(e) {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
@@ -474,13 +489,10 @@
         }
 
         // ================= INICIAR PARTIDA =================
-        function popularFiltrosIniciais() {
-            document.getElementById('select-category-type').value = 'tudo'; atualizarSubCategorias();
-        }
+        function popularFiltrosIniciais() { document.getElementById('select-category-type').value = 'tudo'; atualizarSubCategorias(); }
         function atualizarSubCategorias() {
             const tipo = document.getElementById('select-category-type').value;
-            const container = document.getElementById('group-subcategory');
-            const select = document.getElementById('select-subcategory');
+            const container = document.getElementById('group-subcategory'); const select = document.getElementById('select-subcategory');
             select.innerHTML = '';
             if (tipo === 'tudo') { container.style.display = 'none'; return; }
             container.style.display = 'block';
@@ -511,7 +523,6 @@
             historicoPartida = []; rodadaAtual = 0; acertosConsecutivosSessao = 0;
             document.getElementById('score-tracker').innerHTML = Array(totalRodadas).fill(0).map((_, i) => `<div class="dot" id="dot-${i}"></div>`).join('');
             
-            // Perfil Stats (Aumenta partidas jogadas)
             if(!perfilUsuario.partidasJogadas) perfilUsuario.partidasJogadas = 0;
             perfilUsuario.partidasJogadas += 1; salvarProgressoPerfil();
             
@@ -538,10 +549,17 @@
 
             if (modoJogo === 'alternativas') {
                 document.getElementById('area-alternativas').style.display = 'grid'; document.getElementById('area-digitar').style.display = 'none';
-                let resCerta = `${musica.titulo} - ${musica.artista}`;
+                
+                // CORREÇÃO: Usar .trim() para garantir a comparação sem espaços invisíveis
+                let resCerta = `${musica.titulo.trim()} - ${musica.artista.trim()}`;
                 let opcoes = [resCerta, musica.opcoes_erradas[0], musica.opcoes_erradas[1], musica.opcoes_erradas[2]].sort(() => Math.random() - 0.5);
+                
                 let htmlOpcoes = '';
-                opcoes.forEach(op => { htmlOpcoes += `<button class="option-btn" onclick="verificarResposta('${op.replace(/'/g, "\\'")}', this)">${op}</button>`; });
+                opcoes.forEach(op => { 
+                    // Usar encodeURIComponent impede bugs com aspas simples e duplas no HTML
+                    let encOp = encodeURIComponent(op);
+                    htmlOpcoes += `<button class="option-btn" data-ans="${encOp}" onclick="verificarResposta('${encOp}', this)">${op}</button>`; 
+                });
                 document.getElementById('area-alternativas').innerHTML = htmlOpcoes;
             } else {
                 document.getElementById('area-alternativas').style.display = 'none'; document.getElementById('area-digitar').style.display = 'block';
@@ -573,15 +591,20 @@
         document.getElementById('btn-submit-text').addEventListener('click', function() {
             if(respostaFoiDada) return;
             let digitado = document.getElementById('input-answer').value.toLowerCase().trim();
-            verificarResposta(digitado === playlistJogo[rodadaAtual].titulo.toLowerCase().trim() ? "CORRETO" : "ERRO", this, true);
+            let correto = playlistJogo[rodadaAtual].titulo.toLowerCase().trim();
+            verificarResposta(digitado === correto ? "CORRETO" : "ERRO", this, true);
         });
 
-        function verificarResposta(resposta, elemento, isTexto = false) {
+        function verificarResposta(encodedResposta, elemento, isTexto = false) {
             if(respostaFoiDada) return; respostaFoiDada = true; clearInterval(timerProgresso);
+            
             let musica = playlistJogo[rodadaAtual]; let provedor = musica.provedor || 'youtube';
             if(provedor === 'mp3') mp3Player.pause(); else if(ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
 
-            let acertou = false; let respostaCertaCompleta = `${musica.titulo} - ${musica.artista}`;
+            let acertou = false; 
+            let respostaCertaCompleta = `${musica.titulo.trim()} - ${musica.artista.trim()}`;
+            let resposta = isTexto ? encodedResposta : decodeURIComponent(encodedResposta);
+
             if (modoJogo === 'alternativas' && resposta === respostaCertaCompleta) acertou = true;
             if (modoJogo === 'digitar' && resposta === "CORRETO") acertou = true;
 
@@ -589,7 +612,11 @@
 
             if (modoJogo === 'alternativas') {
                 let botoes = document.querySelectorAll('.option-btn');
-                botoes.forEach(b => { b.disabled = true; if(b.innerText === respostaCertaCompleta) b.classList.add('correct-choice'); });
+                botoes.forEach(b => { 
+                    b.disabled = true; 
+                    let bAns = decodeURIComponent(b.getAttribute('data-ans'));
+                    if(bAns === respostaCertaCompleta) b.classList.add('correct-choice'); 
+                });
                 if(!acertou) elemento.classList.add('wrong-choice');
             } else {
                 let inputTxt = document.getElementById('input-answer'); inputTxt.disabled = true; elemento.disabled = true;
@@ -600,7 +627,6 @@
             document.getElementById(`dot-${rodadaAtual}`).classList.add(acertou ? 'correct' : 'wrong');
             historicoPartida.push({ titulo: musica.titulo, artista: musica.artista, acertou: acertou });
             
-            // Lógica de Conquistas (Achievements)
             if(acertou) { acertosConsecutivosSessao++; } else { acertosConsecutivosSessao = 0; }
             checarConquistas();
 
@@ -615,7 +641,7 @@
             historicoPartida.forEach(item => {
                 tbody.innerHTML += `<tr class="${item.acertou ? 'row-correct' : 'row-wrong'}"><td><b style="color:var(--text-main)">${item.titulo}</b> <br><small style="color:var(--text-muted)">${item.artista}</small></td></tr>`;
             });
-            checarConquistas(true); // Checa conquistas de fim de jogo
+            checarConquistas(true);
         }
 
         function compartilharResultado() {
@@ -638,15 +664,14 @@
             if(!perfilUsuario.desbloqueios) perfilUsuario.desbloqueios = [];
             
             gameConfig.achievements.forEach(ach => {
-                if(perfilUsuario.desbloqueios.includes(ach.id)) return; // Já tem
+                if(perfilUsuario.desbloqueios.includes(ach.id)) return;
                 
                 let desbloqueou = false;
                 if(ach.tipo === 'consecutive' && acertosConsecutivosSessao >= ach.target) desbloqueou = true;
                 if(fimDeJogo && ach.tipo === 'total_played' && perfilUsuario.partidasJogadas >= ach.target) desbloqueou = true;
 
                 if(desbloqueou) {
-                    perfilUsuario.desbloqueios.push(ach.id);
-                    salvarProgressoPerfil();
+                    perfilUsuario.desbloqueios.push(ach.id); salvarProgressoPerfil();
                     alert(`🏆 CONQUISTA DESBLOQUEADA: ${ach.nome}!`);
                 }
             });
@@ -655,21 +680,14 @@
         function renderizarConquistasPerfil() {
             const grid = document.getElementById('profile-achievements-grid'); grid.innerHTML = '';
             if(!perfilUsuario.desbloqueios) perfilUsuario.desbloqueios = [];
-            
             gameConfig.achievements.forEach(ach => {
                 let unlocked = perfilUsuario.desbloqueios.includes(ach.id);
                 let imgUrl = ach.img || "https://cdn-icons-png.flaticon.com/512/3113/3113054.png";
-                grid.innerHTML += `
-                    <div class="achiev-card ${unlocked ? 'unlocked' : ''}">
-                        <img src="${imgUrl}" alt="Trophy">
-                        <h4>${ach.nome}</h4>
-                        <p>${ach.tipo === 'consecutive' ? 'Acertar '+ach.target+' seguidas' : 'Jogar '+ach.target+' partidas'}</p>
-                    </div>
-                `;
+                grid.innerHTML += `<div class="achiev-card ${unlocked ? 'unlocked' : ''}"><img src="${imgUrl}" alt="Trophy"><h4>${ach.nome}</h4><p>${ach.tipo === 'consecutive' ? 'Acertar '+ach.target+' seguidas' : 'Jogar '+ach.target+' partidas'}</p></div>`;
             });
         }
 
-        // ================= ADMIN GERAL =================
+        // ================= ADMIN =================
         function renderizarAdminConfig() {
             document.getElementById('admin-check-achievements').checked = gameConfig.achievementsEnabled;
             const list = document.getElementById('admin-achiev-list'); list.innerHTML = '';
@@ -687,7 +705,6 @@
             let nome = document.getElementById('achiev-nome').value; let img = document.getElementById('achiev-img').value;
             let tipo = document.getElementById('achiev-tipo').value; let target = parseInt(document.getElementById('achiev-target').value);
             if(!nome || !target) return alert("Preencha Nome e Alvo numérico!");
-            
             gameConfig.achievements.push({ id: "a_"+Date.now(), nome: nome, img: img, tipo: tipo, target: target });
             localStorage.setItem('songguess_config', JSON.stringify(gameConfig));
             document.getElementById('achiev-nome').value = ''; document.getElementById('achiev-target').value = '';
@@ -696,8 +713,7 @@
 
         function adminExcluirConquista(id) {
             gameConfig.achievements = gameConfig.achievements.filter(a => a.id !== id);
-            localStorage.setItem('songguess_config', JSON.stringify(gameConfig));
-            renderizarAdminConfig();
+            localStorage.setItem('songguess_config', JSON.stringify(gameConfig)); renderizarAdminConfig();
         }
 
         // ADMIN PLAYLIST
@@ -705,10 +721,9 @@
             const divList = document.getElementById('admin-music-list'); divList.innerHTML = '';
             bancoDeMusicas.forEach(m => {
                 let prov = m.provedor || 'youtube'; let provBadge = prov === 'mp3' ? '<span class="provider-badge badge-mp3">MP3</span>' : '<span class="provider-badge badge-yt">YT</span>';
-                divList.innerHTML += `<div class="admin-song-item"><input type="checkbox" class="check-delete" value="${m.id}" style="width:16px; height:16px; cursor:pointer;"><div style="flex:1;"><b>${m.titulo}</b> - ${m.artista} ${provBadge}</div><div><button class="btn-action" onclick="prepararEdicao('${m.id}')">✏️</button><button class="btn-action" style="color:var(--wrong)" onclick="adminExcluirUnico('${m.id}')">🗑️</button></div></div>`;
+                divList.innerHTML += `<div class="admin-song-item"><input type="checkbox" class="check-delete" value="${m.id}" style="width:16px; height:16px; cursor:pointer;"><div style="flex:1;"><b>${m.titulo}</b> - ${m.artista} ${provBadge}</div><div><button class="btn-action" onclick="prepararEdicao('${m.id}')">✏️</button></div></div>`;
             });
         }
-        function adminExcluirUnico(id) { if(confirm("Excluir esta música?")) { bancoDeMusicas = bancoDeMusicas.filter(m => m.id !== id); localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); renderizarListaAdmin(); } }
         function adminExcluirSelecionados() {
             let marcados = document.querySelectorAll('.check-delete:checked');
             if(marcados.length === 0) return alert("Selecione pelo menos uma.");
@@ -735,7 +750,9 @@
             document.getElementById('add-provedor').value = 'youtube'; document.querySelectorAll('#aba-playlist input[type="text"], #aba-playlist input[type="number"], #aba-playlist input[type="hidden"]').forEach(i => i.value = '');
         }
         function adminSalvarMusica() {
-            let idEdit = document.getElementById('edit-id').value; let tit = document.getElementById('add-titulo').value, art = document.getElementById('add-artista').value, gen = document.getElementById('add-genero').value, lnk = document.getElementById('add-link').value, img = document.getElementById('add-img').value, ini = document.getElementById('add-inicio').value, prov = document.getElementById('add-provedor').value, e1 = document.getElementById('add-erro1').value, e2 = document.getElementById('add-erro2').value, e3 = document.getElementById('add-erro3').value;
+            // Correção Aplicada: Adicionado o .trim() para evitar espaços invisíveis que causam bugs de validação no jogo
+            let idEdit = document.getElementById('edit-id').value;
+            let tit = document.getElementById('add-titulo').value.trim(), art = document.getElementById('add-artista').value.trim(), gen = document.getElementById('add-genero').value.trim(), lnk = document.getElementById('add-link').value.trim(), img = document.getElementById('add-img').value.trim(), ini = document.getElementById('add-inicio').value, prov = document.getElementById('add-provedor').value, e1 = document.getElementById('add-erro1').value.trim(), e2 = document.getElementById('add-erro2').value.trim(), e3 = document.getElementById('add-erro3').value.trim();
             if(!tit || !art || !lnk || !gen) return alert("Preencha Título, Artista, Gênero e Link!");
             let finalLink = lnk; if(prov === 'youtube') { let match = lnk.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); finalLink = (match && match[2].length === 11) ? match[2] : lnk; }
             let obj = { id: idEdit ? idEdit : Date.now().toString(), titulo: tit, artista: art, genero: gen, provedor: prov, audio_url: finalLink, inicio_segundos: parseInt(ini) || 0, imagem_capa: img, opcoes_erradas: [e1||"Erro 1", e2||"Erro 2", e3||"Erro 3"] };
@@ -775,7 +792,7 @@
                     let novoBanco = [];
                     for(let i = 1; i < linhas.length; i++) {
                         let cols = linhas[i].split(';');
-                        if(cols.length >= 7) novoBanco.push({ id: cols[0], titulo: cols[1], artista: cols[2], genero: cols[3], provedor: cols[4], audio_url: cols[5], inicio_segundos: parseInt(cols[6]) || 0, imagem_capa: cols[7] || '', opcoes_erradas: [cols[8]||"Err 1", cols[9]||"Err 2", cols[10]||"Err 3"] });
+                        if(cols.length >= 7) novoBanco.push({ id: cols[0], titulo: cols[1].trim(), artista: cols[2].trim(), genero: cols[3].trim(), provedor: cols[4], audio_url: cols[5], inicio_segundos: parseInt(cols[6]) || 0, imagem_capa: cols[7] || '', opcoes_erradas: [cols[8]||"Err 1", cols[9]||"Err 2", cols[10]||"Err 3"] });
                     }
                     bancoDeMusicas = novoBanco; localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); renderizarListaAdmin(); alert("CSV importado!");
                 } catch (err) { alert("Erro CSV."); }
