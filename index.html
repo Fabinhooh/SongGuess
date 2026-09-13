@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SongGuess - Pro</title>
     <style>
+        /* ================= CSS / ESTILOS MODERNOS ================= */
         :root { --bg-color: #0d0d0d; --card-bg: #181818; --primary: #1db954; --primary-hover: #1ed760; --text-main: #ffffff; --text-muted: #b3b3b3; --border-color: #282828; --correct: #1db954; --wrong: #e22134; }
         body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .container { background-color: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); text-align: center; max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); }
@@ -21,12 +22,20 @@
         .btn-outline { background-color: transparent; border: 2px solid #555; color: var(--text-main); }
         .btn-small { padding: 10px 15px; font-size: 14px; margin-top: 10px; }
         .btn-danger { background-color: transparent; border: 2px solid var(--wrong); color: var(--wrong); }
+        
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px;}
         select, input[type="text"], input[type="number"], input[type="file"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background-color: #242424; color: white; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
         select:focus, input:focus { outline: none; border-color: var(--primary); }
+        select[multiple] { height: 100px; padding: 5px; } /* Ajuste para múltipla seleção */
+        
+        /* Checkbox customizado */
+        .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; color: white !important;}
+        .checkbox-label input { width: 20px; height: 20px; cursor: pointer; }
+
         .input-correct { background-color: var(--correct) !important; color: white !important; font-weight: bold;}
         .input-wrong { background-color: var(--wrong) !important; color: white !important; font-weight: bold;}
+        
         .progress-container { width: 100%; background-color: var(--border-color); border-radius: 10px; height: 8px; margin: 20px 0; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background-color: var(--primary); transition: width 0.1s linear; }
         .tracker { display: flex; justify-content: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -47,11 +56,13 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
         .header-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;}
-        .admin-song-list { max-height: 200px; overflow-y: auto; text-align: left; background: #121212; border-radius: 10px; padding: 10px; border: 1px solid #333; margin-bottom: 20px;}
-        .admin-song-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #282828; font-size: 13px; }
+        .admin-song-list { max-height: 250px; overflow-y: auto; text-align: left; background: #121212; border-radius: 10px; padding: 10px; border: 1px solid #333; margin-bottom: 20px;}
+        .admin-song-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #282828; font-size: 13px; }
         .admin-song-item:last-child { border-bottom: none; }
-        .btn-edit { background: #333; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .btn-edit:hover { background: var(--primary); color: black; }
+        .btn-edit { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+        .btn-edit:hover { background: #555; }
+        .btn-delete { background: var(--wrong); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-left:5px;}
+        .btn-delete:hover { background: #b71c1c; }
         .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
         .admin-tab-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 10px 15px; font-weight: bold; margin-bottom: -1px;}
         .admin-tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
@@ -59,7 +70,7 @@
         .admin-tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         .provider-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;}
         .badge-yt { background-color: #ff0000; color: white; }
-        .badge-mp3 { background-color: #1db954; color: black; }
+        .badge-mp3 { background-color: var(--primary); color: black; }
     </style>
 </head>
 <body>
@@ -73,21 +84,42 @@
             <button onclick="mudarTela('screen-admin')" class="btn btn-outline btn-small" style="margin-top: 30px;">⚙️ Acesso Admin</button>
         </div>
 
-        <!-- TELA INICIAL -->
+        <!-- TELA INICIAL (CONFIGURAÇÕES) -->
         <div id="screen-start" class="screen">
             <h1 style="font-size: 22px; margin-bottom: 25px;">Olá, <span id="user-display-name" class="highlight"></span>!</h1>
+            
             <div class="input-group"><label>Filtrar Categoria:</label>
                 <select id="select-category-type" onchange="atualizarSubCategorias()">
                     <option value="tudo">Tudo Misturado</option><option value="genero">Por Gênero</option><option value="artista">Por Artista</option>
                 </select>
             </div>
-            <div class="input-group" id="group-subcategory" style="display: none;"><label>Escolha a opção:</label><select id="select-subcategory"></select></div>
-            <div class="input-group"><label>Modo de Resposta:</label>
-                <select id="select-mode"><option value="alternativas">Alternativas (4 Opções)</option><option value="digitar">Digitar o Nome</option></select>
+            
+            <div class="input-group" id="group-subcategory" style="display: none;">
+                <label>Selecione as opções: <br><small style="font-size:11px; color:#888;">(Pode selecionar vários)</small></label>
+                <!-- MULTIPLE SELECT -->
+                <select id="select-subcategory" multiple></select>
             </div>
-            <div class="input-group"><label>Rodadas:</label>
-                <select id="select-rounds"><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option></select>
+
+            <div class="admin-grid">
+                <div class="input-group"><label>Modo:</label>
+                    <select id="select-mode"><option value="alternativas">Alternativas</option><option value="digitar">Digitar Nome</option></select>
+                </div>
+                <div class="input-group"><label>Rodadas:</label>
+                    <select id="select-rounds"><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option></select>
+                </div>
             </div>
+
+            <!-- NOVAS CONFIGURAÇÕES DE AUDIO -->
+            <div class="input-group">
+                <label>Duração do trecho (segundos):</label>
+                <input type="number" id="input-duration" value="12" min="3" max="60">
+            </div>
+            <div class="input-group" style="background:#242424; padding:10px; border-radius:10px;">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="check-autoplay" checked> Tocar música automaticamente
+                </label>
+            </div>
+
             <button id="btn-start" class="btn">Iniciar Partida</button>
             <button onclick="mudarTela('screen-login')" class="btn btn-outline btn-small">Trocar Usuário</button>
         </div>
@@ -101,7 +133,7 @@
             <div class="cover-container"><img id="music-cover-img" src="" alt="Capa"></div>
             <div id="music-genre-badge" class="genre-badge">Gênero</div>
 
-            <button id="btn-play" class="btn">▶ Ouvir Trecho (12s)</button>
+            <button id="btn-play" class="btn">▶ Ouvir Trecho</button>
             <div class="progress-container"><div id="progress-bar" class="progress-bar"></div></div>
             <p id="status-text" style="font-size: 14px; color: var(--text-muted);">Clique para ouvir a música!</p>
 
@@ -210,8 +242,15 @@
         let perfilUsuario = { nome: "", acertosTotais: 0 };
         let ytPlayer = null; 
         let mp3Player = new Audio();
+        
+        // Efeitos Sonoros (SFX)
+        const sfxCorrect = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/41/Ding_Sound_Effect.ogg');
+        const sfxWrong = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/42/Error.ogg');
+        sfxCorrect.volume = 0.5; sfxWrong.volume = 0.5;
+
         let playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
         let respostaFoiDada = false;
+        let autoPlayAtivo = true;
 
         function mudarTela(idTela) {
             document.querySelectorAll('.screen').forEach(tela => tela.classList.remove('active'));
@@ -275,9 +314,22 @@
             modoJogo = document.getElementById('select-mode').value;
             let qtdPedida = parseInt(document.getElementById('select-rounds').value);
             let tipoFiltro = document.getElementById('select-category-type').value;
-            let subCategoria = document.getElementById('select-subcategory').value;
+            
+            // CONFIGURAÇÕES NOVAS
+            tempoLimite = parseInt(document.getElementById('input-duration').value) || 12;
+            autoPlayAtivo = document.getElementById('check-autoplay').checked;
+            
+            // FILTRO MULTIPLA SELEÇÃO
+            let selectSub = document.getElementById('select-subcategory');
+            let selecionados = Array.from(selectSub.selectedOptions).map(opt => opt.value);
+            
             let musicasFiltradas = [...bancoDeMusicas];
-            if (tipoFiltro !== 'tudo') musicasFiltradas = musicasFiltradas.filter(m => m[tipoFiltro] === subCategoria);
+            if (tipoFiltro !== 'tudo' && selecionados.length > 0) {
+                musicasFiltradas = musicasFiltradas.filter(m => selecionados.includes(m[tipoFiltro]));
+            } else if (tipoFiltro !== 'tudo' && selecionados.length === 0) {
+                return alert("Por favor, selecione pelo menos uma opção da lista.");
+            }
+
             if(musicasFiltradas.length === 0) return alert("Não há músicas nesta categoria!");
             
             totalRodadas = Math.min(qtdPedida, musicasFiltradas.length);
@@ -297,12 +349,11 @@
             document.getElementById('music-cover-img').src = musica.imagem_capa || 'https://via.placeholder.com/150/282828/FFFFFF?text=SongGuess';
             document.getElementById('music-genre-badge').innerText = musica.genero || 'Mix';
             document.getElementById('progress-bar').style.width = "0%";
-            document.getElementById('status-text').innerText = "Ouça e adivinhe!";
+            document.getElementById('status-text').innerText = autoPlayAtivo ? "Prepare-se..." : "Clique para ouvir a música!";
             
             const btnPlay = document.getElementById('btn-play');
-            btnPlay.innerText = "▶ Ouvir (12s)"; btnPlay.disabled = false;
+            btnPlay.innerText = `▶ Ouvir Trecho (${tempoLimite}s)`; btnPlay.disabled = false;
 
-            // CORREÇÃO: cueVideoById no lugar de loadVideoById evita o auto-play
             let provedor = musica.provedor || 'youtube';
             if(provedor === 'mp3') {
                 mp3Player.src = musica.audio_url;
@@ -330,20 +381,38 @@
                 let btnTxt = document.getElementById('btn-submit-text');
                 btnTxt.innerText = "Confirmar"; btnTxt.className = "btn btn-outline"; btnTxt.disabled = false;
             }
+
+            // Lógica do Auto-play
+            if(autoPlayAtivo) {
+                // Pequeno delay para a API do YT processar o cueVideoById
+                setTimeout(iniciarReproducao, 800);
+            }
         }
 
-        document.getElementById('btn-play').addEventListener('click', (e) => {
+        // Função separada para poder ser chamada pelo botão e pelo Auto-play
+        function iniciarReproducao() {
+            if(respostaFoiDada) return; // Segurança
+            const btnPlay = document.getElementById('btn-play');
             let musica = playlistJogo[rodadaAtual];
             let provedor = musica.provedor || 'youtube';
             
-            if(provedor === 'mp3') {
-                mp3Player.play();
-            } else {
-                if(!ytPlayer || !ytPlayer.playVideo) return alert("API do YouTube não carregou. Verifique sua conexão.");
-                ytPlayer.playVideo(); 
+            try {
+                if(provedor === 'mp3') {
+                    mp3Player.play();
+                } else {
+                    if(!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
+                        throw new Error("YouTube API not ready");
+                    }
+                    ytPlayer.playVideo(); 
+                }
+            } catch(e) {
+                console.log(e);
+                if(autoPlayAtivo) document.getElementById('status-text').innerText = "Seu navegador bloqueou o autoplay. Clique no botão para ouvir.";
+                return; // Aborta o timer se o som foi bloqueado
             }
             
-            e.target.disabled = true; e.target.innerText = "🎵 Tocando...";
+            btnPlay.disabled = true; btnPlay.innerText = "🎵 Tocando...";
+            document.getElementById('status-text').innerText = "Adivinhe qual é a música!";
             
             let tempo = 0; clearInterval(timerProgresso);
             timerProgresso = setInterval(() => {
@@ -357,10 +426,13 @@
                         ytPlayer.pauseVideo(); 
                         ytPlayer.seekTo(musica.inicio_segundos);
                     }
-                    e.target.disabled = false; e.target.innerText = "▶ Ouvir Novamente";
+                    btnPlay.disabled = false; btnPlay.innerText = `▶ Ouvir Novamente`;
                 }
             }, 100);
-        });
+        }
+
+        // Event listener do botão Play aponta para a nova função
+        document.getElementById('btn-play').addEventListener('click', iniciarReproducao);
 
         document.getElementById('btn-submit-text').addEventListener('click', function() {
             if(respostaFoiDada) return;
@@ -384,6 +456,13 @@
 
             if (modoJogo === 'alternativas' && resposta === respostaCertaCompleta) acertou = true;
             if (modoJogo === 'digitar' && resposta === "CORRETO") acertou = true;
+
+            // SFX
+            if(acertou) {
+                sfxCorrect.currentTime = 0; sfxCorrect.play();
+            } else {
+                sfxWrong.currentTime = 0; sfxWrong.play();
+            }
 
             if (modoJogo === 'alternativas') {
                 let botoes = document.querySelectorAll('.option-btn');
@@ -428,7 +507,7 @@
             ytPlayer = new YT.Player('youtube-player', { height: '0', width: '0', playerVars: { 'autoplay': 0, 'controls': 0 } });
         }
 
-        // --- ADMIN LISTA E EDIÇÃO ---
+        // --- ADMIN LISTA E EDIÇÃO E EXCLUSÃO ---
         function renderizarListaAdmin() {
             const divList = document.getElementById('admin-music-list');
             divList.innerHTML = '';
@@ -437,10 +516,21 @@
                 let provBadge = prov === 'mp3' ? '<span class="provider-badge badge-mp3">MP3</span>' : '<span class="provider-badge badge-yt">YT</span>';
                 divList.innerHTML += `
                     <div class="admin-song-item">
-                        <div><b>${m.titulo}</b> - ${m.artista} ${provBadge}</div>
-                        <button class="btn-edit" onclick="prepararEdicao('${m.id}')">✏️ Edit</button>
+                        <div style="flex:1;"><b>${m.titulo}</b> - ${m.artista} ${provBadge}</div>
+                        <div>
+                            <button class="btn-edit" onclick="prepararEdicao('${m.id}')">✏️ Edit</button>
+                            <button class="btn-delete" onclick="adminExcluirMusica('${m.id}')">🗑️</button>
+                        </div>
                     </div>`;
             });
+        }
+
+        function adminExcluirMusica(id) {
+            if(confirm("Tem certeza que deseja excluir esta música do banco?")) {
+                bancoDeMusicas = bancoDeMusicas.filter(m => m.id !== id);
+                localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas));
+                renderizarListaAdmin();
+            }
         }
 
         function prepararEdicao(id) {
