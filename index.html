@@ -5,71 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SongGuess - Pro</title>
     <style>
-        /* ================= CSS / ESTILOS MODERNOS ================= */
-        :root {
-            --bg-color: #0d0d0d; --card-bg: #181818;
-            --primary: #1db954; --primary-hover: #1ed760;
-            --text-main: #ffffff; --text-muted: #b3b3b3;
-            --border-color: #282828; --correct: #1db954; --wrong: #e22134;
-        }
-
+        :root { --bg-color: #0d0d0d; --card-bg: #181818; --primary: #1db954; --primary-hover: #1ed760; --text-main: #ffffff; --text-muted: #b3b3b3; --border-color: #282828; --correct: #1db954; --wrong: #e22134; }
         body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .container { background-color: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); text-align: center; max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); }
         ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        h1 { margin-top: 0; font-weight: 800; font-size: 28px; }
-        .highlight { color: var(--primary); }
+        h1 { margin-top: 0; font-weight: 800; font-size: 28px; } .highlight { color: var(--primary); }
         h2 { font-size: 18px; margin-bottom: 20px; color: var(--text-muted); font-weight: normal;}
         h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top: 25px; text-align: left; font-size: 16px;}
-
-        /* Capa */
         .cover-container { width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.5); background-color: #282828; display: flex; align-items: center; justify-content: center; }
         .cover-container img { width: 100%; height: 100%; object-fit: cover; }
         .genre-badge { background-color: var(--primary); color: #000; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
-
-        /* Botões */
         .btn { background-color: var(--primary); color: #000; border: none; padding: 14px 20px; font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 15px; transition: transform 0.1s, background-color 0.2s; }
         .btn:disabled { background-color: #444; color: #888; cursor: not-allowed; transform: none !important;}
         .btn:hover:not(:disabled) { background-color: var(--primary-hover); transform: scale(1.02); }
         .btn-outline { background-color: transparent; border: 2px solid #555; color: var(--text-main); }
         .btn-small { padding: 10px 15px; font-size: 14px; margin-top: 10px; }
         .btn-danger { background-color: transparent; border: 2px solid var(--wrong); color: var(--wrong); }
-
-        /* Inputs */
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px;}
         select, input[type="text"], input[type="number"], input[type="file"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background-color: #242424; color: white; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
         select:focus, input:focus { outline: none; border-color: var(--primary); }
         .input-correct { background-color: var(--correct) !important; color: white !important; font-weight: bold;}
         .input-wrong { background-color: var(--wrong) !important; color: white !important; font-weight: bold;}
-
-        /* Jogo */
         .progress-container { width: 100%; background-color: var(--border-color); border-radius: 10px; height: 8px; margin: 20px 0; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background-color: var(--primary); transition: width 0.1s linear; }
         .tracker { display: flex; justify-content: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background-color: #333; }
         .dot.correct { background-color: var(--correct); box-shadow: 0 0 5px var(--correct); }
         .dot.wrong { background-color: var(--wrong); box-shadow: 0 0 5px var(--wrong); }
-        
         .options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
         .option-btn { background-color: #242424; color: white; border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 15px; text-align: left;}
         .option-btn:hover:not(:disabled) { background-color: #333; border-color: var(--primary); }
         .option-btn.correct-choice { background-color: var(--correct) !important; border-color: white !important; color: black !important; font-weight: bold;}
         .option-btn.wrong-choice { background-color: var(--wrong) !important; border-color: white !important; font-weight: bold;}
-
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; text-align: left; }
         th, td { padding: 12px 8px; border-bottom: 1px solid var(--border-color); }
         .row-correct { border-left: 4px solid var(--correct); }
         .row-wrong { border-left: 4px solid var(--wrong); }
-
         .screen { display: none; animation: fadeIn 0.3s ease; }
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
         .header-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;}
-
-        /* Lista Admin e Nav (Abas) */
         .admin-song-list { max-height: 200px; overflow-y: auto; text-align: left; background: #121212; border-radius: 10px; padding: 10px; border: 1px solid #333; margin-bottom: 20px;}
         .admin-song-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #282828; font-size: 13px; }
         .admin-song-item:last-child { border-bottom: none; }
@@ -86,9 +63,7 @@
     </style>
 </head>
 <body>
-
     <div class="container">
-        
         <!-- TELA DE LOGIN -->
         <div id="screen-login" class="screen active">
             <h1><span class="highlight">Song</span>Guess</h1>
@@ -101,7 +76,6 @@
         <!-- TELA INICIAL -->
         <div id="screen-start" class="screen">
             <h1 style="font-size: 22px; margin-bottom: 25px;">Olá, <span id="user-display-name" class="highlight"></span>!</h1>
-            
             <div class="input-group"><label>Filtrar Categoria:</label>
                 <select id="select-category-type" onchange="atualizarSubCategorias()">
                     <option value="tudo">Tudo Misturado</option><option value="genero">Por Gênero</option><option value="artista">Por Artista</option>
@@ -114,7 +88,6 @@
             <div class="input-group"><label>Rodadas:</label>
                 <select id="select-rounds"><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option></select>
             </div>
-
             <button id="btn-start" class="btn">Iniciar Partida</button>
             <button onclick="mudarTela('screen-login')" class="btn btn-outline btn-small">Trocar Usuário</button>
         </div>
@@ -149,19 +122,16 @@
             <button onclick="location.reload()" class="btn">Voltar ao Início</button>
         </div>
 
-        <!-- TELA DE ADMIN COM NAV/ABAS -->
+        <!-- TELA DE ADMIN -->
         <div id="screen-admin" class="screen">
             <h1>⚙️ <span class="highlight">Admin</span></h1>
             
-            <!-- Menu de Abas -->
             <div class="admin-nav">
                 <button class="admin-tab-btn active" onclick="mudarAbaAdmin('aba-playlist')">🎵 Playlist</button>
                 <button class="admin-tab-btn" onclick="mudarAbaAdmin('aba-perfil')">👤 Perfil</button>
             </div>
 
-            <!-- ================= CONTEÚDO ABA: PLAYLIST ================= -->
             <div id="aba-playlist" class="admin-tab-content active">
-                
                 <h3>Todas as Músicas</h3>
                 <div class="admin-song-list" id="admin-music-list"></div>
 
@@ -171,7 +141,6 @@
                 <div class="input-group"><input type="text" id="add-artista" placeholder="Artista"></div>
                 <div class="input-group"><input type="text" id="add-genero" placeholder="Gênero (ex: Pop, Rock)"></div>
                 
-                <!-- NOVO: Escolha do Provedor de Áudio -->
                 <div class="input-group">
                     <label>Provedor de Áudio:</label>
                     <select id="add-provedor">
@@ -207,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- ================= CONTEÚDO ABA: PERFIL ================= -->
             <div id="aba-perfil" class="admin-tab-content">
                 <div style="background-color:#242424; padding:20px; border-radius:10px; text-align:center; margin-bottom: 20px;">
                     <h3 style="border:none; margin:0; padding:0; text-align:center; color:white;">Perfil Ativo: <span class="highlight" id="admin-perfil-nome">Nenhum</span></h3>
@@ -228,10 +196,8 @@
         <div id="youtube-player-container" style="position: absolute; left: -9999px;"><div id="youtube-player"></div></div>
     </div>
 
-    <!-- ================= JAVASCRIPT ================= -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Banco Padrão Híbrido (1 com MP3 Direto sem anúncio, 4 com YouTube)
         const bancoPadrao = [
             { id: "1", provedor: "mp3", audio_url: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg", titulo: "Tema do Tetris", artista: "Videogame", genero: "Geek", inicio_segundos: 0, imagem_capa: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Tetris_logo.png/220px-Tetris_logo.png", opcoes_erradas: ["Super Mario - Nintendo", "Zelda - Nintendo", "Sonic - Sega"] },
             { id: "2", provedor: "youtube", audio_url: "4NRXx6U8ABQ", titulo: "Blinding Lights", artista: "The Weeknd", genero: "Pop", inicio_segundos: 25, imagem_capa: "https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36", opcoes_erradas: ["Starboy - The Weeknd", "As It Was - Harry Styles", "Levitating - Dua Lipa"] },
@@ -242,15 +208,11 @@
 
         let bancoDeMusicas = JSON.parse(localStorage.getItem('songguess_musicas')) || bancoPadrao;
         let perfilUsuario = { nome: "", acertosTotais: 0 };
-        
-        // Motores de Áudio
         let ytPlayer = null; 
         let mp3Player = new Audio();
-        
         let playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
         let respostaFoiDada = false;
 
-        // --- SISTEMA DE TELAS E ABAS ---
         function mudarTela(idTela) {
             document.querySelectorAll('.screen').forEach(tela => tela.classList.remove('active'));
             document.getElementById(idTela).classList.add('active');
@@ -269,7 +231,6 @@
             document.getElementById(idAba).classList.add('active');
         }
 
-        // --- LOGIN E PERFIL ---
         document.getElementById('btn-login').addEventListener('click', () => {
             const nome = document.getElementById('input-username').value.trim();
             if(!nome) return alert("Digite um nome!");
@@ -310,7 +271,6 @@
             valoresUnicos.forEach(val => select.innerHTML += `<option value="${val}">${val}</option>`);
         }
 
-        // --- GAMEPLAY E MOTOR DE ÁUDIO ---
         document.getElementById('btn-start').addEventListener('click', () => {
             modoJogo = document.getElementById('select-mode').value;
             let qtdPedida = parseInt(document.getElementById('select-rounds').value);
@@ -342,20 +302,17 @@
             const btnPlay = document.getElementById('btn-play');
             btnPlay.innerText = "▶ Ouvir (12s)"; btnPlay.disabled = false;
 
-            // PREPARAÇÃO DO MOTOR HÍBRIDO DE ÁUDIO
-            let provedor = musica.provedor || 'youtube'; // fallback seguro
+            // CORREÇÃO: cueVideoById no lugar de loadVideoById evita o auto-play
+            let provedor = musica.provedor || 'youtube';
             if(provedor === 'mp3') {
                 mp3Player.src = musica.audio_url;
                 mp3Player.currentTime = musica.inicio_segundos;
-                mp3Player.pause(); // garante que não toca sozinho
             } else {
-                if(ytPlayer && ytPlayer.loadVideoById) { 
-                    ytPlayer.loadVideoById({ videoId: musica.audio_url, startSeconds: musica.inicio_segundos }); 
-                    ytPlayer.pauseVideo(); 
+                if(ytPlayer && ytPlayer.cueVideoById) { 
+                    ytPlayer.cueVideoById({ videoId: musica.audio_url, startSeconds: musica.inicio_segundos }); 
                 }
             }
 
-            // UI de Resposta
             if (modoJogo === 'alternativas') {
                 document.getElementById('area-alternativas').style.display = 'grid';
                 document.getElementById('area-digitar').style.display = 'none';
@@ -382,7 +339,7 @@
             if(provedor === 'mp3') {
                 mp3Player.play();
             } else {
-                if(!ytPlayer || !ytPlayer.playVideo) return alert("API do YouTube não carregou ou foi bloqueada. Tente web hosting.");
+                if(!ytPlayer || !ytPlayer.playVideo) return alert("API do YouTube não carregou. Verifique sua conexão.");
                 ytPlayer.playVideo(); 
             }
             
@@ -495,7 +452,7 @@
             document.getElementById('add-artista').value = m.artista;
             document.getElementById('add-genero').value = m.genero;
             document.getElementById('add-provedor').value = m.provedor || 'youtube';
-            document.getElementById('add-link').value = m.audio_url || m.youtube_id; // backward compatibility
+            document.getElementById('add-link').value = m.audio_url || m.youtube_id; 
             document.getElementById('add-img').value = m.imagem_capa || '';
             document.getElementById('add-inicio').value = m.inicio_segundos;
             document.getElementById('add-erro1').value = m.opcoes_erradas[0];
@@ -552,7 +509,6 @@
             renderizarListaAdmin();
         }
 
-        // --- JSON E CSV IMPORT/EXPORT ---
         function exportarJSON(tipo) {
             let dados = tipo === 'musicas' ? bancoDeMusicas : perfilUsuario;
             let nomeArq = tipo === 'musicas' ? 'songguess_playlist.json' : `songguess_perfil_${perfilUsuario.nome || 'usuario'}.json`;
@@ -568,7 +524,6 @@
                     let obj = JSON.parse(evt.target.result);
                     if(tipo === 'musicas') {
                         if(!Array.isArray(obj)) return alert("Arquivo de playlist inválido!");
-                        // Backward compatibility update
                         obj.forEach(m => { if(!m.audio_url && m.youtube_id) { m.audio_url = m.youtube_id; m.provedor = 'youtube'; }});
                         bancoDeMusicas = obj; localStorage.setItem('songguess_musicas', JSON.stringify(bancoDeMusicas)); 
                         alert("Playlist JSON importada!"); renderizarListaAdmin(); 
