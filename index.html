@@ -11,12 +11,12 @@
         .container { background-color: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); text-align: center; max-height: 95vh; overflow-y: auto; border: 1px solid var(--border-color); position: relative;}
         ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
-        /* Top Bar & Perfil */
+        /* Top Bar & Perfil (Enquadramento de Imagem Perfeito) */
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .profile-btn { background: transparent; border: 2px solid var(--border-color); border-radius: 50%; width: 45px; height: 45px; padding: 0; cursor: pointer; overflow: hidden; transition: 0.2s;}
         .profile-btn:hover { border-color: var(--primary); }
-        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin: 0 auto 15px; display: block;}
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; display: block;} /* object-fit garante que a imagem não estique */
+        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin: 0 auto 15px; display: block;}
 
         h1 { margin-top: 0; font-weight: 800; font-size: 28px; } .highlight { color: var(--primary); }
         h2 { font-size: 18px; margin-bottom: 20px; color: var(--text-muted); font-weight: normal;}
@@ -130,12 +130,24 @@
         <!-- ================= MENU DE PERFIL ================= -->
         <div id="screen-profile" class="screen">
             <h1>Meu <span class="highlight">Perfil</span></h1>
-            <img id="profile-avatar-preview" class="profile-avatar-large" src="" alt="Avatar">
             
-            <p style="color:var(--text-muted); font-size:14px; margin-top:-10px; margin-bottom:20px;">Acertos Totais: <b class="highlight" id="profile-score-display" style="font-size:18px;">0</b></p>
+            <div style="position:relative; width: 120px; margin: 0 auto 15px;">
+                <img id="profile-avatar-preview" class="profile-avatar-large" style="margin:0;" src="" alt="Avatar">
+            </div>
+            
+            <p style="color:var(--text-muted); font-size:14px; margin-top:-5px; margin-bottom:20px;">Acertos Totais: <b class="highlight" id="profile-score-display" style="font-size:18px;">0</b></p>
             
             <div class="input-group"><label>Nome de Usuário:</label><input type="text" id="prof-name"></div>
-            <div class="input-group"><label>Link da Foto (Avatar URL):</label><input type="text" id="prof-avatar" placeholder="Cole o link de uma imagem"></div>
+            
+            <!-- NOVO: Upload de Arquivo + Campo URL -->
+            <div class="input-group">
+                <label>Foto de Perfil (URL ou Galeria):</label>
+                <input type="text" id="prof-avatar" placeholder="Cole o Link URL de uma foto" style="margin-bottom: 5px;">
+                <div style="position: relative;">
+                    <button class="btn btn-outline btn-small" style="width:100%; margin-top:0;">📁 Escolher da Galeria</button>
+                    <input type="file" id="prof-avatar-file" accept="image/*" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;">
+                </div>
+            </div>
             
             <button onclick="salvarEdicaoPerfil()" class="btn">💾 Salvar Alterações</button>
             
@@ -181,7 +193,6 @@
             <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
                 <table id="results-table"><tbody id="results-body"></tbody></table>
             </div>
-            <!-- CORRIGIDO: Retorna ao Start sem deslogar -->
             <button onclick="mudarTela('screen-start')" class="btn">Voltar ao Início</button>
         </div>
 
@@ -230,7 +241,7 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // BANCO DE DADOS - 30 GRANDES HITS DOS ÚLTIMOS 30 ANOS
+        // BANCO DE DADOS - 30 GRANDES HITS
         const bancoPadrao = [
             { id:"1", titulo:"Blinding Lights", artista:"The Weeknd", genero:"Pop", provedor:"youtube", audio_url:"4NRXx6U8ABQ", inicio_segundos:25, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36", opcoes_erradas:["Starboy - The Weeknd", "As It Was - Harry Styles", "Levitating - Dua Lipa"] },
             { id:"2", titulo:"Shape of You", artista:"Ed Sheeran", genero:"Pop", provedor:"youtube", audio_url:"JGwWNGJdvx8", inicio_segundos:30, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96", opcoes_erradas:["Perfect - Ed Sheeran", "Sorry - Justin Bieber", "Havana - Camila Cabello"] },
@@ -242,35 +253,33 @@
             { id:"8", titulo:"Toxic", artista:"Britney Spears", genero:"Pop", provedor:"youtube", audio_url:"LOZuxwVk7TU", inicio_segundos:35, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273cfb8b40a3d6076e0a8166c3a", opcoes_erradas:["Oops I Did It Again - Britney Spears", "Bad Romance - Lady Gaga", "Wannabe - Spice Girls"] },
             { id:"9", titulo:"Uptown Funk", artista:"Mark Ronson ft. Bruno Mars", genero:"Pop", provedor:"youtube", audio_url:"OPf0YbXqDm0", inicio_segundos:50, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27376a8b1ec3c9327db07357062", opcoes_erradas:["24K Magic - Bruno Mars", "Treasure - Bruno Mars", "Get Lucky - Daft Punk"] },
             { id:"10", titulo:"Numb", artista:"Linkin Park", genero:"Rock", provedor:"youtube", audio_url:"kXYiU_JCYtU", inicio_segundos:40, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273e2f0394827092147395c52c0", opcoes_erradas:["In The End - Linkin Park", "Bring Me To Life - Evanescence", "Chop Suey! - System Of A Down"] },
-            { id:"11", titulo:"Bad Romance", artista:"Lady Gaga", genero:"Pop", provedor:"youtube", audio_url:"qrO4YZeyl0I", inicio_segundos:60, imagem_capa:"", opcoes_erradas:["Poker Face - Lady Gaga", "Just Dance - Lady Gaga", "California Gurls - Katy Perry"] },
-            { id:"12", titulo:"Mr. Brightside", artista:"The Killers", genero:"Rock", provedor:"youtube", audio_url:"gGdGFtwPNwQ", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Somebody Told Me - The Killers", "Seven Nation Army - White Stripes", "Take Me Out - Franz Ferdinand"] },
-            { id:"13", titulo:"Crazy in Love", artista:"Beyoncé", genero:"R&B", provedor:"youtube", audio_url:"ViwtNLUqkMY", inicio_segundos:10, imagem_capa:"", opcoes_erradas:["Single Ladies - Beyoncé", "Umbrella - Rihanna", "No Scrubs - TLC"] },
-            { id:"14", titulo:"I Gotta Feeling", artista:"Black Eyed Peas", genero:"Pop", provedor:"youtube", audio_url:"uSD4vsh1zDA", inicio_segundos:35, imagem_capa:"", opcoes_erradas:["Boom Boom Pow - Black Eyed Peas", "Party Rock Anthem - LMFAO", "Tik Tok - Kesha"] },
-            { id:"15", titulo:"Hey Ya!", artista:"Outkast", genero:"Hip-Hop", provedor:"youtube", audio_url:"PWgvGjAhvIw", inicio_segundos:28, imagem_capa:"", opcoes_erradas:["Ms. Jackson - Outkast", "Gold Digger - Kanye West", "Drop It Like It's Hot - Snoop Dogg"] },
-            { id:"16", titulo:"Viva La Vida", artista:"Coldplay", genero:"Pop", provedor:"youtube", audio_url:"dvgZkm1xWPE", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Yellow - Coldplay", "Clocks - Coldplay", "Chasing Cars - Snow Patrol"] },
-            { id:"17", titulo:"Hips Don't Lie", artista:"Shakira", genero:"Pop", provedor:"youtube", audio_url:"DUT5rEU6pqM", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Waka Waka - Shakira", "Despacito - Luis Fonsi", "Danza Kuduro - Don Omar"] },
-            { id:"18", titulo:"As It Was", artista:"Harry Styles", genero:"Pop", provedor:"youtube", audio_url:"H5v3kku4y6Q", inicio_segundos:20, imagem_capa:"", opcoes_erradas:["Watermelon Sugar - Harry Styles", "Stay - The Kid LAROI", "Anti-Hero - Taylor Swift"] },
-            { id:"19", titulo:"Levitating", artista:"Dua Lipa", genero:"Pop", provedor:"youtube", audio_url:"TUVcZfQe-Kw", inicio_segundos:25, imagem_capa:"", opcoes_erradas:["Don't Start Now - Dua Lipa", "Say So - Doja Cat", "Good 4 U - Olivia Rodrigo"] },
-            { id:"20", titulo:"Californication", artista:"Red Hot Chili Peppers", genero:"Rock", provedor:"youtube", audio_url:"YlUKcNNmywk", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Otherside - RHCP", "Under The Bridge - RHCP", "Everlong - Foo Fighters"] },
-            { id:"21", titulo:"Wonderwall", artista:"Oasis", genero:"Rock", provedor:"youtube", audio_url:"6hzrDeceEKc", inicio_segundos:25, imagem_capa:"", opcoes_erradas:["Don't Look Back In Anger - Oasis", "Creep - Radiohead", "Bittersweet Symphony - The Verve"] },
-            { id:"22", titulo:"Shake It Off", artista:"Taylor Swift", genero:"Pop", provedor:"youtube", audio_url:"nfWlot6h_JM", inicio_segundos:35, imagem_capa:"", opcoes_erradas:["Blank Space - Taylor Swift", "Roar - Katy Perry", "Call Me Maybe - Carly Rae Jepsen"] },
-            { id:"23", titulo:"Despacito", artista:"Luis Fonsi ft. Daddy Yankee", genero:"Pop", provedor:"youtube", audio_url:"kJQP7kiw5Fk", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Mi Gente - J Balvin", "Bailando - Enrique Iglesias", "Taki Taki - DJ Snake"] },
-            { id:"24", titulo:"Bad Guy", artista:"Billie Eilish", genero:"Pop", provedor:"youtube", audio_url:"DyDfgMOUjCI", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Ocean Eyes - Billie Eilish", "Royals - Lorde", "Dance Monkey - Tones and I"] },
-            { id:"25", titulo:"Take Me To Church", artista:"Hozier", genero:"Rock", provedor:"youtube", audio_url:"PVjiKRfKpPI", inicio_segundos:50, imagem_capa:"", opcoes_erradas:["Radioactive - Imagine Dragons", "Stressed Out - Twenty One Pilots", "Somebody That I Used To Know - Gotye"] },
-            { id:"26", titulo:"Thinking Out Loud", artista:"Ed Sheeran", genero:"Pop", provedor:"youtube", audio_url:"lp-EO5I60KA", inicio_segundos:45, imagem_capa:"", opcoes_erradas:["Photograph - Ed Sheeran", "All of Me - John Legend", "Just The Way You Are - Bruno Mars"] },
-            { id:"27", titulo:"Creep", artista:"Radiohead", genero:"Rock", provedor:"youtube", audio_url:"XFkzRNyygfk", inicio_segundos:55, imagem_capa:"", opcoes_erradas:["Karma Police - Radiohead", "Losing My Religion - R.E.M.", "Smells Like Teen Spirit - Nirvana"] },
-            { id:"28", titulo:"Wannabe", artista:"Spice Girls", genero:"Pop", provedor:"youtube", audio_url:"gJLIiF15wjQ", inicio_segundos:15, imagem_capa:"", opcoes_erradas:["Everybody - Backstreet Boys", "Baby One More Time - Britney Spears", "No Scrubs - TLC"] },
-            { id:"29", titulo:"In Da Club", artista:"50 Cent", genero:"Hip-Hop", provedor:"youtube", audio_url:"5qm8Ao8kA2I", inicio_segundos:30, imagem_capa:"", opcoes_erradas:["Candy Shop - 50 Cent", "Drop It Like It's Hot - Snoop Dogg", "Yeah! - Usher"] },
-            { id:"30", titulo:"Flowers", artista:"Miley Cyrus", genero:"Pop", provedor:"youtube", audio_url:"G7KNmW9a75Y", inicio_segundos:28, imagem_capa:"", opcoes_erradas:["Wrecking Ball - Miley Cyrus", "Kill Bill - SZA", "Vampire - Olivia Rodrigo"] }
+            { id:"11", titulo:"Bad Romance", artista:"Lady Gaga", genero:"Pop", provedor:"youtube", audio_url:"qrO4YZeyl0I", inicio_segundos:60, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273117eaab48479e3e78bd8dbbd", opcoes_erradas:["Poker Face - Lady Gaga", "Just Dance - Lady Gaga", "California Gurls - Katy Perry"] },
+            { id:"12", titulo:"Mr. Brightside", artista:"The Killers", genero:"Rock", provedor:"youtube", audio_url:"gGdGFtwPNwQ", inicio_segundos:20, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273618641973ee6732cfd1e2e98", opcoes_erradas:["Somebody Told Me - The Killers", "Seven Nation Army - White Stripes", "Take Me Out - Franz Ferdinand"] },
+            { id:"13", titulo:"Crazy in Love", artista:"Beyoncé", genero:"R&B", provedor:"youtube", audio_url:"ViwtNLUqkMY", inicio_segundos:10, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273a2ceea7dc96e3db8a101b072", opcoes_erradas:["Single Ladies - Beyoncé", "Umbrella - Rihanna", "No Scrubs - TLC"] },
+            { id:"14", titulo:"I Gotta Feeling", artista:"Black Eyed Peas", genero:"Pop", provedor:"youtube", audio_url:"uSD4vsh1zDA", inicio_segundos:35, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273c52e42354c46522c06915220", opcoes_erradas:["Boom Boom Pow - Black Eyed Peas", "Party Rock Anthem - LMFAO", "Tik Tok - Kesha"] },
+            { id:"15", titulo:"Hey Ya!", artista:"Outkast", genero:"Hip-Hop", provedor:"youtube", audio_url:"PWgvGjAhvIw", inicio_segundos:28, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2732958742f1cf5b8823521235f", opcoes_erradas:["Ms. Jackson - Outkast", "Gold Digger - Kanye West", "Drop It Like It's Hot - Snoop Dogg"] },
+            { id:"16", titulo:"Viva La Vida", artista:"Coldplay", genero:"Pop", provedor:"youtube", audio_url:"dvgZkm1xWPE", inicio_segundos:30, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273516ff8a6a6839b036579fc95", opcoes_erradas:["Yellow - Coldplay", "Clocks - Coldplay", "Chasing Cars - Snow Patrol"] },
+            { id:"17", titulo:"Hips Don't Lie", artista:"Shakira", genero:"Pop", provedor:"youtube", audio_url:"DUT5rEU6pqM", inicio_segundos:20, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273a6ee5e08c6913501a24d5be9", opcoes_erradas:["Waka Waka - Shakira", "Despacito - Luis Fonsi", "Danza Kuduro - Don Omar"] },
+            { id:"18", titulo:"As It Was", artista:"Harry Styles", genero:"Pop", provedor:"youtube", audio_url:"H5v3kku4y6Q", inicio_segundos:20, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2732e8f5952141c448c0ecca1dd", opcoes_erradas:["Watermelon Sugar - Harry Styles", "Stay - The Kid LAROI", "Anti-Hero - Taylor Swift"] },
+            { id:"19", titulo:"Levitating", artista:"Dua Lipa", genero:"Pop", provedor:"youtube", audio_url:"TUVcZfQe-Kw", inicio_segundos:25, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2733979857d4287bb4a595738cb", opcoes_erradas:["Don't Start Now - Dua Lipa", "Say So - Doja Cat", "Good 4 U - Olivia Rodrigo"] },
+            { id:"20", titulo:"Californication", artista:"Red Hot Chili Peppers", genero:"Rock", provedor:"youtube", audio_url:"YlUKcNNmywk", inicio_segundos:45, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273a76ba86dbf83ad730620f4c6", opcoes_erradas:["Otherside - RHCP", "Under The Bridge - RHCP", "Everlong - Foo Fighters"] },
+            { id:"21", titulo:"Wonderwall", artista:"Oasis", genero:"Rock", provedor:"youtube", audio_url:"6hzrDeceEKc", inicio_segundos:25, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2733a1005a76904bc493630f9a4", opcoes_erradas:["Don't Look Back In Anger - Oasis", "Creep - Radiohead", "Bittersweet Symphony - The Verve"] },
+            { id:"22", titulo:"Shake It Off", artista:"Taylor Swift", genero:"Pop", provedor:"youtube", audio_url:"nfWlot6h_JM", inicio_segundos:35, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273d688a4ec9989a19c5c2fc722", opcoes_erradas:["Blank Space - Taylor Swift", "Roar - Katy Perry", "Call Me Maybe - Carly Rae Jepsen"] },
+            { id:"23", titulo:"Despacito", artista:"Luis Fonsi", genero:"Pop", provedor:"youtube", audio_url:"kJQP7kiw5Fk", inicio_segundos:45, imagem_capa:"https://i.scdn.co/image/ab67616d0000b2733db9b9c9f7a731d75c0ffb4a", opcoes_erradas:["Mi Gente - J Balvin", "Bailando - Enrique Iglesias", "Taki Taki - DJ Snake"] },
+            { id:"24", titulo:"Bad Guy", artista:"Billie Eilish", genero:"Pop", provedor:"youtube", audio_url:"DyDfgMOUjCI", inicio_segundos:30, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27350a3147b4edd7701a876c6ce", opcoes_erradas:["Ocean Eyes - Billie Eilish", "Royals - Lorde", "Dance Monkey - Tones and I"] },
+            { id:"25", titulo:"Take Me To Church", artista:"Hozier", genero:"Rock", provedor:"youtube", audio_url:"PVjiKRfKpPI", inicio_segundos:50, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273d2a70cb6009ed92e21e0fb2e", opcoes_erradas:["Radioactive - Imagine Dragons", "Stressed Out - Twenty One Pilots", "Somebody That I Used To Know - Gotye"] },
+            { id:"26", titulo:"Thinking Out Loud", artista:"Ed Sheeran", genero:"Pop", provedor:"youtube", audio_url:"lp-EO5I60KA", inicio_segundos:45, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27313b3e37318a0c247b550bccd", opcoes_erradas:["Photograph - Ed Sheeran", "All of Me - John Legend", "Just The Way You Are - Bruno Mars"] },
+            { id:"27", titulo:"Creep", artista:"Radiohead", genero:"Rock", provedor:"youtube", audio_url:"XFkzRNyygfk", inicio_segundos:55, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273c52e42354c46522c06915220", opcoes_erradas:["Karma Police - Radiohead", "Losing My Religion - R.E.M.", "Smells Like Teen Spirit - Nirvana"] },
+            { id:"28", titulo:"Wannabe", artista:"Spice Girls", genero:"Pop", provedor:"youtube", audio_url:"gJLIiF15wjQ", inicio_segundos:15, imagem_capa:"https://i.scdn.co/image/ab67616d0000b273b06385d8a9e09d05e2637a23", opcoes_erradas:["Everybody - Backstreet Boys", "Baby One More Time - Britney Spears", "No Scrubs - TLC"] },
+            { id:"29", titulo:"In Da Club", artista:"50 Cent", genero:"Hip-Hop", provedor:"youtube", audio_url:"5qm8Ao8kA2I", inicio_segundos:30, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27329243468b6531dd58021da6d", opcoes_erradas:["Candy Shop - 50 Cent", "Drop It Like It's Hot - Snoop Dogg", "Yeah! - Usher"] },
+            { id:"30", titulo:"Flowers", artista:"Miley Cyrus", genero:"Pop", provedor:"youtube", audio_url:"G7KNmW9a75Y", inicio_segundos:28, imagem_capa:"https://i.scdn.co/image/ab67616d0000b27376a8b1ec3c9327db07357062", opcoes_erradas:["Wrecking Ball - Miley Cyrus", "Kill Bill - SZA", "Vampire - Olivia Rodrigo"] }
         ];
 
         let bancoDeMusicas = JSON.parse(localStorage.getItem('songguess_musicas')) || bancoPadrao;
         let perfilUsuario = { nome: "", avatar: "", acertosTotais: 0 };
+        let ytPlayer = null, mp3Player = new Audio();
         
-        let ytPlayer = null; 
-        let mp3Player = new Audio();
-        
-        // Efeitos Sonoros Diretos (Confiáveis e rápidos)
+        // Efeitos Sonoros Diretos
         const sfxCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
         const sfxWrong = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
         sfxCorrect.volume = 0.5; sfxWrong.volume = 0.3;
@@ -278,7 +287,7 @@
         let playlistJogo = [], rodadaAtual = 0, totalRodadas = 10, modoJogo = 'alternativas', historicoPartida = [], tempoLimite = 12, timerProgresso;
         let respostaFoiDada = false, autoPlayAtivo = true;
 
-        // HELPER: Gerador de Avatar
+        // HELPER: Gerador de Avatar (Fallback para Iniciais se não tiver imagem)
         function getAvatarUrl(nome, url) {
             if(url && url.length > 5) return url;
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=181818&color=1db954&size=150`;
@@ -299,9 +308,7 @@
                 document.getElementById('profile-avatar-preview').src = getAvatarUrl(perfilUsuario.nome, perfilUsuario.avatar);
                 document.getElementById('profile-score-display').innerText = perfilUsuario.acertosTotais;
             }
-            if(idTela === 'screen-admin') {
-                renderizarListaAdmin();
-            }
+            if(idTela === 'screen-admin') renderizarListaAdmin();
         }
 
         document.getElementById('btn-login').addEventListener('click', () => {
@@ -318,16 +325,44 @@
             mudarTela('screen-start');
         });
 
+        // UPLOAD DE IMAGEM DO DISPOSITIVO (COMPRESSÃO BASE64 PARA LOCALSTORAGE)
+        document.getElementById('prof-avatar-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Comprime a imagem num quadrado 300x300 invisível para não estourar o LocalStorage
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 300;
+                    let width = img.width; let height = img.height;
+                    
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const base64String = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    document.getElementById('prof-avatar').value = base64String;
+                    document.getElementById('profile-avatar-preview').src = base64String;
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
         function salvarEdicaoPerfil() {
             let novoNome = document.getElementById('prof-name').value.trim();
             let novoAvatar = document.getElementById('prof-avatar').value.trim();
             if(!novoNome) return alert("Nome não pode ficar vazio!");
             
             let perfisSalvos = JSON.parse(localStorage.getItem('songguess_perfis')) || {};
-            // Remove chave antiga se mudou de nome (para não duplicar)
-            if(novoNome !== perfilUsuario.nome && perfisSalvos[perfilUsuario.nome]) {
-                delete perfisSalvos[perfilUsuario.nome];
-            }
+            if(novoNome !== perfilUsuario.nome && perfisSalvos[perfilUsuario.nome]) delete perfisSalvos[perfilUsuario.nome];
             
             perfilUsuario.nome = novoNome;
             perfilUsuario.avatar = novoAvatar;
@@ -371,7 +406,6 @@
             modoJogo = document.getElementById('select-mode').value;
             let qtdPedida = parseInt(document.getElementById('select-rounds').value);
             let tipoFiltro = document.getElementById('select-category-type').value;
-            
             tempoLimite = parseInt(document.getElementById('input-duration').value) || 12;
             autoPlayAtivo = document.getElementById('check-autoplay').checked;
             
@@ -379,11 +413,8 @@
             let selecionados = Array.from(selectSub.selectedOptions).map(opt => opt.value);
             
             let musicasFiltradas = [...bancoDeMusicas];
-            if (tipoFiltro !== 'tudo' && selecionados.length > 0) {
-                musicasFiltradas = musicasFiltradas.filter(m => selecionados.includes(m[tipoFiltro]));
-            } else if (tipoFiltro !== 'tudo' && selecionados.length === 0) {
-                return alert("Por favor, selecione pelo menos uma opção da lista.");
-            }
+            if (tipoFiltro !== 'tudo' && selecionados.length > 0) musicasFiltradas = musicasFiltradas.filter(m => selecionados.includes(m[tipoFiltro]));
+            else if (tipoFiltro !== 'tudo' && selecionados.length === 0) return alert("Selecione pelo menos uma opção da lista.");
 
             if(musicasFiltradas.length === 0) return alert("Não há músicas nesta categoria!");
             
@@ -490,7 +521,6 @@
             if (modoJogo === 'alternativas' && resposta === respostaCertaCompleta) acertou = true;
             if (modoJogo === 'digitar' && resposta === "CORRETO") acertou = true;
 
-            // SFX Play
             try { if(acertou) { sfxCorrect.currentTime=0; sfxCorrect.play(); } else { sfxWrong.currentTime=0; sfxWrong.play(); } } catch(e){}
 
             if (modoJogo === 'alternativas') {
